@@ -1,8 +1,10 @@
 #include "TeleopDefault.h"
 #include <WPILib.h>
+#include "../CommandBase.h"
+#include "../RobotMap.h"
 
 TeleopDefault::TeleopDefault() {
-	//Requires(drivetrain);
+	Requires(drivetrain);
 }
 
 // Called just before this Command runs the first time
@@ -12,6 +14,8 @@ void TeleopDefault::Initialize() {
 
 // Called repeatedly when this Command is scheduled to run
 void TeleopDefault::Execute() {
+
+	drivetrain->DriveInternal(controls->RightJoystick->GetRawAxis(0), 0, 0, 0);
 
 }
 

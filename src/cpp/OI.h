@@ -11,7 +11,8 @@
 
 class OI {
 private:
-	Joystick *LeftJoystick, *RightJoystick;
+	//Joystick *LeftJoystick, *RightJoystick;
 public:
 	OI();
+	Joystick *LeftJoystick, *RightJoystick;
 };

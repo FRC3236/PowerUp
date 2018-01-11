@@ -8,7 +8,7 @@
 class DriveTrain : public frc::Subsystem {
 private:
 	WPI_TalonSRX *FrontLeft, *BackLeft, *FrontRight, *BackRight;
-	void DriveInternal(double,double,double,double);
+	//void DriveInternal(double,double,double,double);
 	AnalogInput * AnInput;
 public:
 	DriveTrain();
@@ -17,6 +17,7 @@ public:
 	void Drive(double);
 	void Traverse(double);
 	void KillDrive();
+	void DriveInternal(double,double,double,double);
 
 	double GetDistance();
 };
