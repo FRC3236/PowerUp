@@ -6,6 +6,7 @@
 /*----------------------------------------------------------------------------*/
 
 #pragma once
+#include <string>
 
 
 // Driver Station Stuff //
@@ -17,3 +18,4 @@ constexpr auto FRONTLEFTCANPORT = 2;
 constexpr auto BACKLEFTCANPORT = 6;
 constexpr auto FRONTRIGHTCANPORT = 3;
 constexpr auto BACKRIGHTCANPORT = 1;
+

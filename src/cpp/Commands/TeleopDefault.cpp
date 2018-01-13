@@ -20,7 +20,7 @@ void TeleopDefault::Execute() {
 	std::cout << to_string(drivetrain->GetEncoder()) << std::endl;
     //std::cout << to_string(drivetrain->GetGyro()) << std::endl;
     //std::cout << to_string(drivetrain->GetDistance()) << std::endl;
-	drivetrain->DriveInternal(-controls->RightJoystick->GetRawAxis(0), -controls->RightJoystick->GetRawAxis(0),controls->RightJoystick->GetRawAxis(0), controls->RightJoystick->GetRawAxis(0));
+	//drivetrain->DriveInternal(-controls->RightJoystick->GetRawAxis(0), -controls->RightJoystick->GetRawAxis(0),controls->RightJoystick->GetRawAxis(0), controls->RightJoystick->GetRawAxis(0));
 
 }
 

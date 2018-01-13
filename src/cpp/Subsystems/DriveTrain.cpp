@@ -8,62 +8,128 @@
 
 #include "DriveTrain.h"
 #include "../RobotMap.h"
+#include <iostream>
 #include <cmath>
 
 
 DriveTrain::DriveTrain() : Subsystem("DriveTrain") {
-	FrontLeft = new WPI_TalonSRX(FRONTLEFTCANPORT);
-	FrontRight = new WPI_TalonSRX(FRONTRIGHTCANPORT);
-	BackLeft = new WPI_TalonSRX(BACKLEFTCANPORT);
-	BackRight = new WPI_TalonSRX(BACKRIGHTCANPORT);
+	LeftSide = new WPI_TalonSRX(FRONTLEFTCANPORT);
+	RightSide = new WPI_TalonSRX(BACKRIGHTCANPORT);
 
-	FrontLeftQuadrature = new FeedbackDevice(QuadEncoder);
+	LeftSideQuadrature = new FeedbackDevice(QuadEncoder);
+	RightSideQuadrature = new FeedbackDevice(QuadEncoder);
 
     Gyro = new ADXRS450_Gyro();
 	AnInput = new AnalogInput(0);
+
+	RefAngle = Gyro->GetAngle();
+
+	LeftSide->ConfigSelectedFeedbackSensor(*LeftSideQuadrature, 0, 0);
+	RightSide->ConfigSelectedFeedbackSensor(*RightSideQuadrature, 0, 0);
+	SetEncoder();
 }
 
 /**
 	Sets the speeds of each Talon SRX individually
-	@param fls : the desired speed of FrontLeft
+	@param fls : the desired speed of LeftSide
 	@param frs : the desired speed of FrontRight
 	@param bls : the desired speed of BackLeft
-	@param brs : the desired speed of BackRight
+	@param brs : the desired speed of RightSide
 
 	@return void
 */
-void DriveTrain::DriveInternal(double fls, double bls, double brs, double frs) {
-	this->FrontLeft->Set(fls);
-	this->FrontRight->Set(frs);
-	this->BackLeft->Set(bls);
-	this->BackRight->Set(brs);
+void DriveTrain::DriveInternal(double fls, double brs) {
+	this->LeftSide->Set(fls);
+	this->RightSide->Set(brs);
 
 	return;
 }
 
 void DriveTrain::Drive(double s){
-    this->FrontLeft->Set(s);
-    this->BackRight->Set(s);
+    this->LeftSide->Set(s);
+    this->RightSide->Set(-s);
 }
 
-void DriveTrain::CheckInches(double inches) {
-    double distance = this->FrontLeft->GetSelectedSensorPosition(0) / 1440 * 6 * M_PI;
-    while (distance <= inches)
-    {
-        this->Drive(1);
+void DriveTrain::Turn(double speed) {
+	LeftSide->Set(speed);
+    RightSide->Set(speed);
+}
+
+bool DriveTrain::DriveInches(double inches, double speed) {
+    double distance = GetEncoder();
+	double err = (inches - distance) / inches;
+    if (distance > inches) {
+        speed = 0;
     }
+	std::cout << "REFANGLE: " << RefAngle << std::endl;
+    Drive(fmax(speed * err,0.25));
+	SmartDashboard::PutNumber("Error", distance);
+	return (distance > inches);
+}
+
+double DriveTrain::GetGyro() {
+	return Gyro->GetAngle();
 }
 
 void DriveTrain::SetEncoder(){
-    FrontLeft->ConfigSelectedFeedbackSensor(*FrontLeftQuadrature, 0, 0);
+    LeftSide->SetSelectedSensorPosition(0, 0, 0);
+	RightSide->SetSelectedSensorPosition(0, 0, 0);
 }
 
 double DriveTrain::GetEncoder(){
-	return this->FrontLeft->GetSelectedSensorPosition(0) / 1440 * 6 * M_PI;
+	double SideA = LeftSide->GetSelectedSensorPosition(0) / 1440.0 * 6.0 * M_PI;
+	double SideB = -(RightSide->GetSelectedSensorPosition(0) / 1440.0 * 6.0 * M_PI);
+	//return (SideA + SideB) / 2;
+	return SideA;
+}
+
+void DriveTrain::DriveStraight(double speed, double refAngle) {
+	double currentAngle = Gyro->GetAngle();
+	double error = currentAngle - refAngle;
+	//SmartDashboard::PutNumber("Error", error);
+	int marginOfError = 1;
+	double constSpeedChange = 0.05;
+	double maxAngle = 15;
+	double correction = constSpeedChange * (error/maxAngle);
+	if (fabs(error) > marginOfError) {
+		if (currentAngle > refAngle) {
+			DriveInternal(fmin(speed-correction, speed-0.3), -(speed));
+		} else {
+			DriveInternal(speed, -(fmin(speed-correction, speed-0.3)));
+		}
+	} else {
+		Drive(speed);
+	}
 
 }
-double DriveTrain::GetGyro(){
-   return this->Gyro->GetAngle();
+
+bool DriveTrain::TurnAngle(double angle){
+    double turn;
+    double current = Gyro->GetAngle();
+	double targetAngle = RefAngle + angle;
+	double error = ((targetAngle - current) / angle);
+    if (targetAngle > 0) {
+		turn = 0.7;
+	} else {
+		turn = -0.7;
+	}
+	double speed = fmax(turn * error, 0.2);
+
+	Turn(speed);
+	std::cout << Gyro->GetAngle() << " " << targetAngle << std::endl;
+	if (fabs(Gyro->GetAngle()) >  fabs(targetAngle)) {
+		Turn(0);
+	}
+
+	SmartDashboard::PutNumber("Gyro", current);
+	SmartDashboard::PutNumber("Error", error);
+
+	if (fabs(targetAngle) - fabs(current) < 4) {
+		return true;
+	}
+
+	//SmartDashboard::PutNumber("Error", speed);
+	return (fabs(Gyro->GetAngle()) > fabs(targetAngle));
 }
 
 void DriveTrain::Calibrate(){
@@ -84,51 +150,21 @@ void DriveTrain::Initialize() {
 
 	return;
 }
-
-/**
-	Public-facing interface to set the speeds of the Talon SRX's
-	@param leftSpeed : the desired speed of the left side of the DriveTrain
-	@param rightSpeed : the desired speed of the right side of the DriveTrain
-
-	@return void
-*/
-void DriveTrain::Drive(double leftSpeed, double rightSpeed) {
-	this->DriveInternal(leftSpeed, leftSpeed, rightSpeed, rightSpeed);
-
-	return;
-}
-
-/**
-	Public-facing interface to set the speeds of the Talon SRX's; drives only forwards or backwards
-	@param speed : the desired speed of the DriveTrain
-
-	@return void
-*/
-/*void DriveTrain::Drive(double speed) {
-	this->DriveInternal(-speed, -speed, speed, speed);
-
-	return;
-}*/
-
-/**
-	Drives robot laterally without changing orientation
-	@param speed : the desired speed of the DriveTrain
-
-	@return void
-*/
-void DriveTrain::Traverse(double speed) {
-	this->DriveInternal(speed, -speed, -speed, speed);
-
-	return;
-}
-
 /**
 	Stops all Talon SRX's
 
 	@return void
 */
 void DriveTrain::KillDrive() {
-	this->DriveInternal(0,0,0,0);
+	this->DriveInternal(0,0);
 
 	return;
+}
+
+void DriveTrain::SetRefAngle(double newRefAngle) {
+	RefAngle = newRefAngle;
+}
+
+double DriveTrain::GetRefAngle() {
+	return RefAngle;
 }
