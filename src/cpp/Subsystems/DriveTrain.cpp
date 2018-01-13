@@ -8,6 +8,8 @@
 
 #include "DriveTrain.h"
 #include "../RobotMap.h"
+#include <cmath>
+
 
 DriveTrain::DriveTrain() : Subsystem("DriveTrain") {
 	FrontLeft = new WPI_TalonSRX(FRONTLEFTCANPORT);
@@ -15,6 +17,9 @@ DriveTrain::DriveTrain() : Subsystem("DriveTrain") {
 	BackLeft = new WPI_TalonSRX(BACKLEFTCANPORT);
 	BackRight = new WPI_TalonSRX(BACKRIGHTCANPORT);
 
+	FrontLeftQuadrature = new FeedbackDevice(QuadEncoder);
+
+    Gyro = new ADXRS450_Gyro();
 	AnInput = new AnalogInput(0);
 }
 
@@ -36,8 +41,37 @@ void DriveTrain::DriveInternal(double fls, double bls, double brs, double frs) {
 	return;
 }
 
+void DriveTrain::Drive(double s){
+    this->FrontLeft->Set(s);
+    this->BackRight->Set(s);
+}
+
+void DriveTrain::CheckInches(double inches) {
+    double distance = this->FrontLeft->GetSelectedSensorPosition(0) / 1440 * 6 * M_PI;
+    while (distance <= inches)
+    {
+        this->Drive(1);
+    }
+}
+
+void DriveTrain::SetEncoder(){
+    FrontLeft->ConfigSelectedFeedbackSensor(*FrontLeftQuadrature, 0, 0);
+}
+
+double DriveTrain::GetEncoder(){
+	return this->FrontLeft->GetSelectedSensorPosition(0) / 1440 * 6 * M_PI;
+
+}
+double DriveTrain::GetGyro(){
+   return this->Gyro->GetAngle();
+}
+
+void DriveTrain::Calibrate(){
+    Gyro->Calibrate();
+}
+
 double DriveTrain::GetDistance() {
-	return this->AnInput->GetVoltage() / 0.0049;
+	return this->AnInput->GetVoltage() / 0.0049 / 2.54 / 12;
 }
 
 /**
@@ -70,11 +104,11 @@ void DriveTrain::Drive(double leftSpeed, double rightSpeed) {
 
 	@return void
 */
-void DriveTrain::Drive(double speed) {
+/*void DriveTrain::Drive(double speed) {
 	this->DriveInternal(-speed, -speed, speed, speed);
 
 	return;
-}
+}*/
 
 /**
 	Drives robot laterally without changing orientation

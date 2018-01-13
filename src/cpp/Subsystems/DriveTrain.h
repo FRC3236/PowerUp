@@ -9,7 +9,11 @@ class DriveTrain : public frc::Subsystem {
 private:
 	WPI_TalonSRX *FrontLeft, *BackLeft, *FrontRight, *BackRight;
 	//void DriveInternal(double,double,double,double);
+
+	FeedbackDevice *FrontLeftQuadrature;
+
 	AnalogInput * AnInput;
+    ADXRS450_Gyro * Gyro;
 public:
 	DriveTrain();
 	void Initialize();
@@ -19,7 +23,12 @@ public:
 	void KillDrive();
 	void DriveInternal(double,double,double,double);
 
+    void CheckInches(double);
+    void SetEncoder();
+	double GetEncoder();
 	double GetDistance();
+    double GetGyro();
+    void Calibrate();
 };
 
 #endif  // DriveTrain_H

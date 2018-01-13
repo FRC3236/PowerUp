@@ -13,7 +13,7 @@ void AutoDefault::Initialize() {
 }
 
 void AutoDefault::Execute() {
-
+    drivetrain->CheckInches(20);
 }
 
 void AutoDefault::Interrupted() {

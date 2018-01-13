@@ -36,31 +36,40 @@ using namespace std;
 
 class Robot : public TimedRobot {
 private:
-	SendableChooser<Command*> * AutonomousChooser;
-	SendableChooser<Command*> * TeleopChooser;
+	SendableChooser<Command*>AutonomousChooser;
+	SendableChooser<Command*> TeleopChooser;
 	unique_ptr<Command> AutoMode;
 	unique_ptr<Command> TeleMode;
 
 public:
 	void RobotInit() override {
         CommandBase::Init();
+        /*TeleopChooser->AddDefault("Default Driver", new TeleopDefault());
+        AutonomousChooser->AddDefault("Default Auto", new AutoDefault());
+
+        SmartDashboard::PutData("Teleop Modes", TeleopChooser);
+        SmartDashboard::PutData("Auto Modes", AutonomousChooser);*/
 
 	}
 
 	void DisabledInit() override {
-		TeleopChooser->AddDefault("Default Driver", new TeleopDefault());
-		AutonomousChooser->AddDefault("Default Auto", new AutoDefault());
+        frc::Scheduler::GetInstance()->ResetAll();
+        frc::Scheduler::GetInstance()->RemoveAll();
 
-		SmartDashboard::PutData("Teleop Modes", TeleopChooser);
-		SmartDashboard::PutData("Auto Modes", AutonomousChooser);
+		TeleopChooser.AddDefault("Default Driver", new TeleopDefault());
+		AutonomousChooser.AddDefault("Default Auto", new AutoDefault());
+
+
+		SmartDashboard::PutData("Teleop Modes", &TeleopChooser);
+		SmartDashboard::PutData("Auto Modes", &AutonomousChooser);
 	}
 
 	void DisabledPeriodic() override {
-		frc::Scheduler::GetInstance()->Run();
+		//frc::Scheduler::GetInstance()->Run();
 	}
 	void AutonomousInit() override {
 		AutoMode.release();
-		AutoMode.reset(AutonomousChooser->GetSelected());
+		AutoMode.reset(AutonomousChooser.GetSelected());
 		if (AutoMode != nullptr) {
 			AutoMode->Start();
 		}
@@ -72,7 +81,7 @@ public:
 
 	void TeleopInit() override {
 		TeleMode.release();
-		TeleMode.reset(TeleopChooser->GetSelected());
+		TeleMode.reset(TeleopChooser.GetSelected());
 		if (TeleMode != nullptr) {
 			TeleMode->Start();
 		}
