@@ -1,23 +1,20 @@
 //
-// Created by Eric on 1/11/2018.
+// Created by robotics on 1/16/2018.
 //
 
-#include "AutoDefault.h"
-
+#include "AutoPrioritizeSwitchLeft.h"
 using namespace std;
 
-AutoDefault::AutoDefault() {
+AutoPrioritizeSwitchLeft::AutoPrioritizeSwitchLeft() {
 	Requires(drivetrain);
 }
 
-void AutoDefault::Initialize() {
+void AutoPrioritizeSwitchLeft::Initialize() {
 	drivetrain->KillDrive();
-    drivetrain->SetEncoder();
 	Step = 1;
 }
 
-void AutoDefault::Execute() {
-
+void AutoPrioritizeSwitchLeft::Execute() {
 	switch (Step) {
 		default: {
 			drivetrain->KillDrive();
@@ -58,18 +55,18 @@ void AutoDefault::Execute() {
 			}
 			break;
 		}
-		// end switch case
+			// end switch case
 	}
 }
 
-void AutoDefault::Interrupted() {
-	End();
-}
-
-void AutoDefault::End() {
+void AutoPrioritizeSwitchLeft::End() {
 	drivetrain->KillDrive();
 }
 
-bool AutoDefault::IsFinished() {
-	return false;
+void AutoPrioritizeSwitchLeft::Interrupted() {
+	End();
+}
+
+bool AutoPrioritizeSwitchLeft::IsFinished() {
+	return Step == 10;
 }

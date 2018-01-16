@@ -19,8 +19,8 @@ public:
 	DriveTrain();
 	void Initialize();
 	void Drive(double);
+	void Drive(double,double);
 	void KillDrive();
-	void DriveInternal(double,double);
 	void DriveStraight(double, double);
     bool DriveInches(double, double);
     void SetEncoder();

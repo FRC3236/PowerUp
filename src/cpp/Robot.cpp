@@ -26,11 +26,12 @@
 #include <SmartDashboard/SmartDashboard.h>
 #include <TimedRobot.h>
 #include "CommandBase.h"
-#include "Subsystems/DriveTrain.h"
 #include "Commands/TeleopDefault.h"
 #include "Commands/AutoDefault.h"
 #include "Commands/ResetGyro.h"
 #include "Commands/DoNothing.h"
+#include "Commands/AutoPrioritizeSwitchLeft.h"
+#include "Commands/AutoPrioritizeSwitchRight.h"
 #include <iostream>
 
 
@@ -45,12 +46,6 @@ private:
 	unique_ptr<Command> TeleMode;
 	Command * resetGyro;
 
-
-	std::string GAMEDATA;
-	std::string OURSWITCH;
-	std::string SCALE;
-	std::string THEIRSWITCH;
-
 public:
 	void RobotInit() override {
         CommandBase::Init();
@@ -58,13 +53,14 @@ public:
 	}
 
 	void DisabledInit() override {
-        frc::Scheduler::GetInstance()->ResetAll();
-        frc::Scheduler::GetInstance()->RemoveAll();
+        Scheduler::GetInstance()->ResetAll();
+        Scheduler::GetInstance()->RemoveAll();
 
 		TeleopChooser.AddDefault("Default Driver", new TeleopDefault());
 		AutonomousChooser.AddDefault("Default Auto", new AutoDefault());
 
-		AutonomousChooser.AddObject("Do Nothing", new DoNothing());
+		AutonomousChooser.AddObject("[LEFT] Switch", new AutoPrioritizeSwitchLeft());
+		AutonomousChooser.AddObject("[RIGHT] Switch", new AutoPrioritizeSwitchRight());
 
 
 		SmartDashboard::PutData("Teleop Modes", &TeleopChooser);
@@ -78,7 +74,6 @@ public:
 		SmartDashboard::PutString("Field Layout", "Unknown");
 
 		CommandBase::drivetrain->Calibrate();
-
 		CommandBase::drivetrain->SetRefAngle(CommandBase::drivetrain->GetGyro());
 	}
 
@@ -87,13 +82,6 @@ public:
 
 	}
 	void AutonomousInit() override {
-		GAMEDATA = frc::DriverStation::GetInstance().GetGameSpecificMessage();
-		OURSWITCH = GAMEDATA[0];
-		SCALE = GAMEDATA[1];
-		THEIRSWITCH = GAMEDATA[2];
-
-		SmartDashboard::PutString("Field Layout", "Our Switch: " + OURSWITCH + "\n Scale: " + SCALE + "\n Their Switch: " + THEIRSWITCH);
-
 		AutoMode.release();
 		AutoMode.reset(AutonomousChooser.GetSelected());
 		if (AutoMode != nullptr) {
@@ -102,7 +90,7 @@ public:
 	}
 
 	void AutonomousPeriodic() override {
-		frc::Scheduler::GetInstance()->Run();
+		Scheduler::GetInstance()->Run();
 	}
 
 	void TeleopInit() override {
@@ -114,7 +102,7 @@ public:
 	}
 
 	void TeleopPeriodic() override {
-		frc::Scheduler::GetInstance()->Run();
+		Scheduler::GetInstance()->Run();
 	}
 
 	void TestPeriodic() override {

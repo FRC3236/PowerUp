@@ -38,9 +38,9 @@ DriveTrain::DriveTrain() : Subsystem("DriveTrain") {
 
 	@return void
 */
-void DriveTrain::DriveInternal(double fls, double brs) {
-	this->LeftSide->Set(fls);
-	this->RightSide->Set(brs);
+void DriveTrain::Drive(double fls, double brs) {
+	LeftSide->Set(fls);
+	RightSide->Set(brs);
 
 	return;
 }
@@ -93,9 +93,9 @@ void DriveTrain::DriveStraight(double speed, double refAngle) {
 	double correction = constSpeedChange * (error/maxAngle);
 	if (fabs(error) > marginOfError) {
 		if (currentAngle > refAngle) {
-			DriveInternal(fmin(speed-correction, speed-0.3), -(speed));
+			Drive(fmin(speed-correction, speed-0.3), -(speed));
 		} else {
-			DriveInternal(speed, -(fmin(speed-correction, speed-0.3)));
+			Drive(speed, -(fmin(speed-correction, speed-0.3)));
 		}
 	} else {
 		Drive(speed);
@@ -156,7 +156,7 @@ void DriveTrain::Initialize() {
 	@return void
 */
 void DriveTrain::KillDrive() {
-	this->DriveInternal(0,0);
+	this->Drive(0,0);
 
 	return;
 }
