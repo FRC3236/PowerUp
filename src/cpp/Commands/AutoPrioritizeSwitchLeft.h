@@ -6,6 +6,7 @@
 #define NEWPOWERUP_AUTOPRIORITIZESWITCHLEFT_H
 
 #include "../CommandBase.h"
+#include "../PID.h"
 
 
 class AutoPrioritizeSwitchLeft : public CommandBase {
@@ -17,6 +18,7 @@ public:
 	void End() override;
 	void Interrupted() override;
 
+	PID * pid;
 	int Step;
 };
 

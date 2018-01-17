@@ -14,8 +14,8 @@ constexpr auto LEFTJOYSTICK = 0;
 constexpr auto RIGHTJOYSTICK = 1;
 
 // Drive Train Stuff //
-constexpr auto FRONTLEFTCANPORT = 2;
-constexpr auto BACKLEFTCANPORT = 6;
-constexpr auto FRONTRIGHTCANPORT = 3;
-constexpr auto BACKRIGHTCANPORT = 1;
+constexpr auto RIGHTCANENCODER = 1;
+constexpr auto LEFTCANENCODER = 2;
+constexpr auto RIGHTCANBASIC = 3;
+constexpr auto LEFTCANBASIC = 4;
 

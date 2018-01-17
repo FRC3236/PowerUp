@@ -11,10 +11,11 @@
 #include <iostream>
 #include <cmath>
 
-
 DriveTrain::DriveTrain() : Subsystem("DriveTrain") {
-	LeftSide = new WPI_TalonSRX(FRONTLEFTCANPORT);
-	RightSide = new WPI_TalonSRX(BACKRIGHTCANPORT);
+	LeftSideA = new WPI_TalonSRX(LEFTCANENCODER);
+	RightSideA = new WPI_TalonSRX(RIGHTCANENCODER);
+	LeftSideB = new WPI_TalonSRX(LEFTCANBASIC);
+	RightSideB = new WPI_TalonSRX(RIGHTCANBASIC);
 
 	LeftSideQuadrature = new FeedbackDevice(QuadEncoder);
 	RightSideQuadrature = new FeedbackDevice(QuadEncoder);
@@ -24,61 +25,69 @@ DriveTrain::DriveTrain() : Subsystem("DriveTrain") {
 
 	RefAngle = Gyro->GetAngle();
 
-	LeftSide->ConfigSelectedFeedbackSensor(*LeftSideQuadrature, 0, 0);
-	RightSide->ConfigSelectedFeedbackSensor(*RightSideQuadrature, 0, 0);
+	LeftSideA->ConfigSelectedFeedbackSensor(*LeftSideQuadrature, 0, 0);
+	RightSideA->ConfigSelectedFeedbackSensor(*RightSideQuadrature, 0, 0);
 	SetEncoder();
+
+	SetName("DriveTrain");
+	pid = new PID(0);
 }
 
-/**
-	Sets the speeds of each Talon SRX individually
-	@param fls : the desired speed of LeftSide
-	@param frs : the desired speed of FrontRight
-	@param bls : the desired speed of BackLeft
-	@param brs : the desired speed of RightSide
+void DriveTrain::SetLeft(double speed) {
+	LeftSideA->Set(speed);
+	LeftSideB->Set(speed);
+}
 
-	@return void
-*/
-void DriveTrain::Drive(double fls, double brs) {
-	LeftSide->Set(fls);
-	RightSide->Set(brs);
+void DriveTrain::SetPID(double fac) {
+	this->pid->Point(fac);
+}
+
+void DriveTrain::SetRight(double speed) {
+	RightSideA->Set(speed);
+	RightSideB->Set(speed);
+}
+
+
+void DriveTrain::Drive(double leftSpeed, double rightSpeed) {
+	SetLeft(leftSpeed);
+	SetRight(rightSpeed);
 
 	return;
 }
 
-void DriveTrain::Drive(double s){
-    this->LeftSide->Set(s);
-    this->RightSide->Set(-s);
+void DriveTrain::Drive(double speed) {
+	SetLeft(speed);
+	SetRight(-speed);
 }
 
 void DriveTrain::Turn(double speed) {
-	LeftSide->Set(speed);
-    RightSide->Set(speed);
+	SetLeft(speed);
+    SetRight(speed);
 }
 
 bool DriveTrain::DriveInches(double inches, double speed) {
     double distance = GetEncoder();
 	double err = (inches - distance) / inches;
     if (distance > inches) {
-        speed = 0;
-    }
-	std::cout << "REFANGLE: " << RefAngle << std::endl;
-    Drive(fmax(speed * err,0.25));
+		speed = 0;
+	}
+	this->pid->Update(distance);
+    DriveStraight(fmax(speed * err,0.25), RefAngle);
 	SmartDashboard::PutNumber("Error", distance);
 	return (distance > inches);
 }
-
 double DriveTrain::GetGyro() {
 	return Gyro->GetAngle();
 }
 
 void DriveTrain::SetEncoder(){
-    LeftSide->SetSelectedSensorPosition(0, 0, 0);
-	RightSide->SetSelectedSensorPosition(0, 0, 0);
+    LeftSideA->SetSelectedSensorPosition(0, 0, 0);
+	RightSideA->SetSelectedSensorPosition(0, 0, 0);
 }
 
 double DriveTrain::GetEncoder(){
-	double SideA = LeftSide->GetSelectedSensorPosition(0) / 1440.0 * 6.0 * M_PI;
-	double SideB = -(RightSide->GetSelectedSensorPosition(0) / 1440.0 * 6.0 * M_PI);
+	double SideA = LeftSideA->GetSelectedSensorPosition(0) / 1440.0 * 6.0 * M_PI;
+	//double SideB = -(RightSideA->GetSelectedSensorPosition(0) / 1440.0 * 6.0 * M_PI);
 	//return (SideA + SideB) / 2;
 	return SideA;
 }
@@ -87,15 +96,16 @@ void DriveTrain::DriveStraight(double speed, double refAngle) {
 	double currentAngle = Gyro->GetAngle();
 	double error = currentAngle - refAngle;
 	//SmartDashboard::PutNumber("Error", error);
-	int marginOfError = 1;
-	double constSpeedChange = 0.05;
+	double marginOfError = 1.6;
+	double constSpeedChange = 0.03;
 	double maxAngle = 15;
-	double correction = constSpeedChange * (error/maxAngle);
+	std::cout << (error/maxAngle) << std::endl;
+	double correction = constSpeedChange * ((error/maxAngle)/2);
 	if (fabs(error) > marginOfError) {
 		if (currentAngle > refAngle) {
-			Drive(fmin(speed-correction, speed-0.3), -(speed));
+			Drive(fmin(speed-this->pid->GetPI(), speed-0.3), -(speed));
 		} else {
-			Drive(speed, -(fmin(speed-correction, speed-0.3)));
+			Drive(speed, -(fmin(speed-this->pid->GetPI(), speed-0.3)));
 		}
 	} else {
 		Drive(speed);
@@ -109,9 +119,9 @@ bool DriveTrain::TurnAngle(double angle){
 	double targetAngle = RefAngle + angle;
 	double error = ((targetAngle - current) / angle);
     if (targetAngle > 0) {
-		turn = 0.7;
+		turn = 0.5;
 	} else {
-		turn = -0.7;
+		turn = -0.5;
 	}
 	double speed = fmax(turn * error, 0.2);
 
@@ -146,7 +156,7 @@ double DriveTrain::GetDistance() {
 	@return void
 */
 void DriveTrain::Initialize() {
-	this->KillDrive();
+	KillDrive();
 
 	return;
 }
@@ -156,7 +166,7 @@ void DriveTrain::Initialize() {
 	@return void
 */
 void DriveTrain::KillDrive() {
-	this->Drive(0,0);
+	Drive(0,0);
 
 	return;
 }

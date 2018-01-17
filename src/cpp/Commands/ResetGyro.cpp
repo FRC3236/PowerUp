@@ -5,7 +5,7 @@
 #include "ResetGyro.h"
 
 ResetGyro::ResetGyro() {
-	Requires(drivetrain);
+	//Requires(drivetrain);
 }
 
 void ResetGyro::Initialize() {
@@ -13,7 +13,7 @@ void ResetGyro::Initialize() {
 }
 
 void ResetGyro::Execute() {
-	drivetrain->Calibrate();
+	CommandBase::drivetrain->Calibrate();
 	End();
 }
 

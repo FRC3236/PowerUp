@@ -4,10 +4,11 @@
 #include <Commands/Subsystem.h>
 #include <ctre/Phoenix.h>
 #include "WPILib.h"
+#include "../PID.h"
 
 class DriveTrain : public frc::Subsystem {
 private:
-	WPI_TalonSRX *LeftSide, *RightSide;
+	WPI_TalonSRX *LeftSideA, *LeftSideB, *RightSideA, *RightSideB;
 	//void DriveInternal(double,double,double,double);
 
 	FeedbackDevice *LeftSideQuadrature, *RightSideQuadrature;
@@ -15,6 +16,8 @@ private:
 	AnalogInput * AnInput;
     ADXRS450_Gyro * Gyro;
 	double RefAngle;
+	PID * pid;
+
 public:
 	DriveTrain();
 	void Initialize();
@@ -30,6 +33,12 @@ public:
     void Calibrate();
     bool TurnAngle(double);
     void Turn(double);
+
+	void SetLeft(double);
+	void SetRight(double);
+
+	void SetPID(double);
+
 
 	double GetRefAngle();
 	void SetRefAngle(double);

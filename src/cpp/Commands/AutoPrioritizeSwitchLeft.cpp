@@ -3,6 +3,7 @@
 //
 
 #include "AutoPrioritizeSwitchLeft.h"
+#include <iostream>
 using namespace std;
 
 AutoPrioritizeSwitchLeft::AutoPrioritizeSwitchLeft() {
@@ -12,6 +13,7 @@ AutoPrioritizeSwitchLeft::AutoPrioritizeSwitchLeft() {
 void AutoPrioritizeSwitchLeft::Initialize() {
 	drivetrain->KillDrive();
 	Step = 1;
+	pid = new PID(228);
 }
 
 void AutoPrioritizeSwitchLeft::Execute() {
@@ -21,6 +23,8 @@ void AutoPrioritizeSwitchLeft::Execute() {
 			End();
 		}
 		case 1: {
+			drivetrain->SetPID(228);
+			std::cout << "GETPID" << this->pid->GetPI() << std::endl;
 			if (drivetrain->DriveInches(228, 1)) {
 				Step = 2;
 			}

@@ -11,7 +11,6 @@ TeleopDefault::TeleopDefault() {
 
 // Called just before this Command runs the first time
 void TeleopDefault::Initialize() {
-    drivetrain->Calibrate();
 	drivetrain->SetEncoder();
 	Requires(drivetrain);
 }
@@ -21,7 +20,9 @@ void TeleopDefault::Execute() {
 	double forwardSpeed, lateralSpeed;
 	forwardSpeed = controls->RightJoystick->GetY();
 	lateralSpeed = controls->RightJoystick->GetX();
-	drivetrain->Drive( forwardSpeed - lateralSpeed, forwardSpeed + lateralSpeed );
+	drivetrain->Drive( lateralSpeed - forwardSpeed, lateralSpeed + forwardSpeed );
+	double avg = ((lateralSpeed - forwardSpeed) + (lateralSpeed - forwardSpeed)) / 2;
+	frc::SmartDashboard::PutNumber("Error", avg);
 }
 
 // Make this return true when this Command no longer needs to run execute()

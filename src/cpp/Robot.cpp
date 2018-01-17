@@ -63,18 +63,18 @@ public:
 		AutonomousChooser.AddObject("[RIGHT] Switch", new AutoPrioritizeSwitchRight());
 
 
+		CommandBase::drivetrain->Calibrate();
+		CommandBase::drivetrain->SetRefAngle(CommandBase::drivetrain->GetGyro());
+
 		SmartDashboard::PutData("Teleop Modes", &TeleopChooser);
 		SmartDashboard::PutData("Auto Modes", &AutonomousChooser);
 
-		SmartDashboard::PutData("Reset Gyro", resetGyro);
+		SmartDashboard::PutData("Reset Gyro", new ResetGyro());
 
         SmartDashboard::PutNumber("Gyro", 0);
 		SmartDashboard::PutNumber("Error", 0);
 
 		SmartDashboard::PutString("Field Layout", "Unknown");
-
-		CommandBase::drivetrain->Calibrate();
-		CommandBase::drivetrain->SetRefAngle(CommandBase::drivetrain->GetGyro());
 	}
 
 	void DisabledPeriodic() override {
