@@ -30,8 +30,10 @@ public:
 	double GetEncoder();
 	double GetDistance();
     double GetGyro();
-    void Calibrate();
+    void CalibrateGyro();
+	void ResetGyro();
     bool TurnAngle(double);
+	bool TurnToAngle(double);
     void Turn(double);
 
 	void SetLeft(double);
