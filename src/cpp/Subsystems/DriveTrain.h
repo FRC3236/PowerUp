@@ -13,6 +13,8 @@ private:
 
 	FeedbackDevice *LeftSideQuadrature, *RightSideQuadrature;
 
+	DigitalInput *LeftSwitch, *RightSwitch;
+
 	AnalogInput * AnInput;
     ADXRS450_Gyro * Gyro;
 	double RefAngle;
@@ -20,6 +22,8 @@ private:
 
 public:
 	DriveTrain();
+	bool GetLeftSwitch();
+	bool GetRightSwitch();
 	void Initialize();
 	void Drive(double);
 	void Drive(double,double);
@@ -30,16 +34,15 @@ public:
 	double GetEncoder();
 	double GetDistance();
     double GetGyro();
-    void CalibrateGyro();
-	void ResetGyro();
+    void Calibrate();
     bool TurnAngle(double);
-	bool TurnToAngle(double);
     void Turn(double);
 
 	void SetLeft(double);
 	void SetRight(double);
 
 	void SetPID(double);
+
 
 
 	double GetRefAngle();

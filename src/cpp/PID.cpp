@@ -3,10 +3,12 @@
 //
 
 #include "PID.h"
-#include "WPILib.h"
-#include <iostream>
 
 PID::PID(double point) {
+	this->PFac = 1;
+	this->IFac = 1;
+	this->DFac = 1;
+
 	this->Reset(point);
 }
 
@@ -20,24 +22,20 @@ double PID::Point() {
 
 void PID::Update(double factor) {
 	this->P = this->point - factor;
-	this->I += (this->P);
+	this->I += (this->P * 0.02);
 	this->D = (this->P - this->preverror) / 0.02;
 
 	this->preverror = this->P;
 }
 
 double PID::GetPI() {
-	std::cout << "[PIDcpp] P:" << this->P << " I:" << this->I << " | Point: " << this->point << std::endl;
-	frc::SmartDashboard::PutNumber("Error",(this->PFac * this->P) + (this->IFac * this->I));
 	return (this->PFac * this->P) + (this->IFac * this->I);
 }
 
 void PID::Reset(double point) {
-	this->P = 0;
-	this->I = 0;
-	this->D = 0;
-	this->PFac = 0.002;
-	this->IFac = 0.002;
-	this->DFac = 0.002;
+	this->P = 1;
+	this->I = 1;
+	this->D = 1;
+
 	this->point = point;
 }

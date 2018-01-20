@@ -19,3 +19,11 @@ constexpr auto LEFTCANENCODER = 2;
 constexpr auto RIGHTCANBASIC = 3;
 constexpr auto LEFTCANBASIC = 4;
 
+// Solenoids //
+constexpr auto SolenoidPort1 =  0;
+constexpr auto SolenoidPort2 =  2;
+constexpr auto SolenoidPort3 =  4;
+constexpr auto SolenoidPort4 =  6;
+
+
+

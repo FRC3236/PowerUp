@@ -13,7 +13,7 @@ void ResetGyro::Initialize() {
 }
 
 void ResetGyro::Execute() {
-	CommandBase::drivetrain->ResetGyro();
+	CommandBase::drivetrain->Calibrate();
 	End();
 }
 

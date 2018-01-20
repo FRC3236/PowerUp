@@ -13,30 +13,29 @@ AutoPrioritizeSwitchLeft::AutoPrioritizeSwitchLeft() {
 void AutoPrioritizeSwitchLeft::Initialize() {
 	drivetrain->KillDrive();
 	Step = 1;
-
-	drivetrain->SetPID(0);
+	pid = new PID(228);
 }
 
 void AutoPrioritizeSwitchLeft::Execute() {
-	SmartDashboard::PutNumber("Gyro", drivetrain->GetGyro());
 	switch (Step) {
 		default: {
 			drivetrain->KillDrive();
 			End();
 		}
 		case 1: {
+			drivetrain->SetPID(228);
+			std::cout << "GETPID" << this->pid->GetPI() << std::endl;
 			if (drivetrain->DriveInches(228, 1)) {
 				Step = 2;
 			}
 			break;
 		}
 		case 2: {
-			if (drivetrain->TurnToAngle(90)) {
+			if (drivetrain->TurnAngle(90)) {
 				drivetrain->SetEncoder();
+				drivetrain->SetRefAngle(drivetrain->GetGyro());
 				Step = 3;
-				drivetrain->SetPID(90);
 			}
-			drivetrain->SetPID(90);
 			break;
 		}
 		case 3: {
@@ -49,13 +48,13 @@ void AutoPrioritizeSwitchLeft::Execute() {
 				speed = 0.75;
 			}
 			if (drivetrain->DriveInches(dist, speed)) {
+				drivetrain->SetRefAngle(drivetrain->GetGyro());
 				Step = 4;
 			}
 			break;
 		}
 		case 4: {
-			if (drivetrain->TurnToAngle(180)) {
-				drivetrain->SetPID(180);
+			if (drivetrain->TurnAngle(90)) {
 				End();
 			}
 			break;

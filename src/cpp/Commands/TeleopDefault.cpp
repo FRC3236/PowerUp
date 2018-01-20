@@ -22,6 +22,8 @@ void TeleopDefault::Execute() {
 	lateralSpeed = controls->RightJoystick->GetX();
 	drivetrain->Drive( lateralSpeed - forwardSpeed, lateralSpeed + forwardSpeed );
 	double avg = ((lateralSpeed - forwardSpeed) + (lateralSpeed - forwardSpeed)) / 2;
+	frc::SmartDashboard::PutBoolean("Right Switch", drivetrain->GetRightSwitch());
+	frc::SmartDashboard::PutBoolean("Left Switch", drivetrain->GetLeftSwitch());
 	frc::SmartDashboard::PutNumber("Error", avg);
 }
 

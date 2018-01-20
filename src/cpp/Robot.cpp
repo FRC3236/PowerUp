@@ -50,7 +50,6 @@ public:
 	void RobotInit() override {
         CommandBase::Init();
 		resetGyro = new ResetGyro();
-		CommandBase::drivetrain->CalibrateGyro();
 	}
 
 	void DisabledInit() override {
@@ -63,6 +62,8 @@ public:
 		AutonomousChooser.AddObject("[LEFT] Switch", new AutoPrioritizeSwitchLeft());
 		AutonomousChooser.AddObject("[RIGHT] Switch", new AutoPrioritizeSwitchRight());
 
+
+		CommandBase::drivetrain->Calibrate();
 		CommandBase::drivetrain->SetRefAngle(CommandBase::drivetrain->GetGyro());
 
 		SmartDashboard::PutData("Teleop Modes", &TeleopChooser);
@@ -78,9 +79,6 @@ public:
 
 	void DisabledPeriodic() override {
 		SmartDashboard::PutNumber("Gyro", CommandBase::drivetrain->GetGyro());
-		if (Scheduler::GetInstance() != nullptr) {
-			Scheduler::GetInstance()->Run();
-		}
 
 	}
 	void AutonomousInit() override {

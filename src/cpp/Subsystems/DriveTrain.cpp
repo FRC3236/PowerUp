@@ -20,6 +20,9 @@ DriveTrain::DriveTrain() : Subsystem("DriveTrain") {
 	LeftSideQuadrature = new FeedbackDevice(QuadEncoder);
 	RightSideQuadrature = new FeedbackDevice(QuadEncoder);
 
+	LeftSwitch = new DigitalInput(0);
+	RightSwitch = new DigitalInput(1);
+
     Gyro = new ADXRS450_Gyro();
 	AnInput = new AnalogInput(0);
 
@@ -32,6 +35,13 @@ DriveTrain::DriveTrain() : Subsystem("DriveTrain") {
 	SetName("DriveTrain");
 	pid = new PID(0);
 }
+bool DriveTrain::GetLeftSwitch(){
+	return LeftSwitch->Get();
+}
+
+bool DriveTrain::GetRightSwitch(){
+	return RightSwitch->Get();
+}
 
 void DriveTrain::SetLeft(double speed) {
 	LeftSideA->Set(speed);
@@ -39,8 +49,7 @@ void DriveTrain::SetLeft(double speed) {
 }
 
 void DriveTrain::SetPID(double fac) {
-	this->RefAngle = fac;
-	this->pid->Reset(fac);
+	this->pid->Point(fac);
 }
 
 void DriveTrain::SetRight(double speed) {
@@ -72,8 +81,9 @@ bool DriveTrain::DriveInches(double inches, double speed) {
     if (distance > inches) {
 		speed = 0;
 	}
-    DriveStraight(fmax(speed * err, 0.25), RefAngle);
-	//SmartDashboard::PutNumber("Error", distance);
+	this->pid->Update(distance);
+    DriveStraight(fmax(speed * err,0.25), RefAngle);
+	SmartDashboard::PutNumber("Error", distance);
 	return (distance > inches);
 }
 double DriveTrain::GetGyro() {
@@ -94,18 +104,21 @@ double DriveTrain::GetEncoder(){
 
 void DriveTrain::DriveStraight(double speed, double refAngle) {
 	double currentAngle = Gyro->GetAngle();
-	double constantSpeed = 0.8;
-	std::cout << this->pid->GetPI() << " " << this->pid->Point() << std::endl;
-	this->pid->Update(currentAngle);
-	if (fabs(this->pid->GetPI()) > 0.1) {
-		//if (currentAngle > refAngle) {
-			Drive(speed-(constantSpeed*this->pid->GetPI()), -(speed)+(constantSpeed*this->pid->GetPI()));
-		//} else {
-		//	Drive(speed, -(speed) + fabs(this->pid->GetPI()));
-		//}
+	double error = currentAngle - refAngle;
+	//SmartDashboard::PutNumber("Error", error);
+	double marginOfError = 1.6;
+	double constSpeedChange = 0.03;
+	double maxAngle = 15;
+	std::cout << (error/maxAngle) << std::endl;
+	double correction = constSpeedChange * ((error/maxAngle)/2);
+	if (fabs(error) > marginOfError) {
+		if (currentAngle > refAngle) {
+			Drive(fmin(speed-this->pid->GetPI(), speed-0.3), -(speed));
+		} else {
+			Drive(speed, -(fmin(speed-this->pid->GetPI(), speed-0.3)));
+		}
 	} else {
 		Drive(speed);
-		//this->pid->Reset(RefAngle);
 	}
 
 }
@@ -116,9 +129,9 @@ bool DriveTrain::TurnAngle(double angle){
 	double targetAngle = RefAngle + angle;
 	double error = ((targetAngle - current) / angle);
     if (targetAngle > 0) {
-		turn = 0.4;
+		turn = 0.5;
 	} else {
-		turn = -0.4;
+		turn = -0.5;
 	}
 	double speed = fmax(turn * error, 0.2);
 
@@ -139,40 +152,8 @@ bool DriveTrain::TurnAngle(double angle){
 	return (fabs(Gyro->GetAngle()) > fabs(targetAngle));
 }
 
-bool DriveTrain::TurnToAngle(double angle){
-	double turn;
-	double current = Gyro->GetAngle();
-	double targetAngle = angle;
-	double error = ((targetAngle - current) / angle);
-	if (targetAngle > 0) {
-		turn = 0.35;
-	} else {
-		turn = -0.35;
-	}
-	double speed = fmax(turn * error, 0.2);
-
-	Turn(speed);
-	std::cout << "[TurnToAngle] " << Gyro->GetAngle() << " " << targetAngle << std::endl;
-	if (fabs(Gyro->GetAngle()) >  fabs(targetAngle)) {
-		Turn(0);
-	}
-
-	SmartDashboard::PutNumber("Gyro", current);
-	SmartDashboard::PutNumber("Error", error);
-
-	if (fabs(targetAngle) - fabs(current) < 4) {
-		return true;
-	}
-
-	return (fabs(Gyro->GetAngle()) > fabs(targetAngle));
-}
-
-void DriveTrain::CalibrateGyro(){
+void DriveTrain::Calibrate(){
     Gyro->Calibrate();
-}
-
-void DriveTrain::ResetGyro() {
-	Gyro->Reset();
 }
 
 double DriveTrain::GetDistance() {
