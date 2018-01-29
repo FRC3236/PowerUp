@@ -2,23 +2,21 @@
 // Created by robotics on 1/16/2018.
 //
 
-#ifndef NEWPOWERUP_AUTOPRIORITIZESWITCHLEFT_H
-#define NEWPOWERUP_AUTOPRIORITIZESWITCHLEFT_H
+#ifndef NEWPOWERUP_AUTOPRIORITIZESWITCHRIGHT_H
+#define NEWPOWERUP_AUTOPRIORITIZESWITCHRIGHT_H
 
-#include "../CommandBase.h"
-#include "../PID.h"
+#include "../../CommandBase.h"
 
 
-class AutoPrioritizeSwitchLeft : public CommandBase {
+class AutoPrioritizeSwitchRight : public CommandBase {
 public:
-	AutoPrioritizeSwitchLeft();
+	AutoPrioritizeSwitchRight();
 	void Initialize() override;
 	void Execute() override;
 	bool IsFinished() override;
 	void End() override;
 	void Interrupted() override;
 
-	PID * pid;
 	int Step;
 };
 

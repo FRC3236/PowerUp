@@ -1,29 +1,30 @@
 //
-// Created by Eric on 1/11/2018.
+// Created by robotics on 1/16/2018.
 //
 
-#include "AutoDefault.h"
-
+#include "PrioritizeSwitchLeft.h"
+#include <iostream>
 using namespace std;
 
-AutoDefault::AutoDefault() {
+AutoPrioritizeSwitchLeft::AutoPrioritizeSwitchLeft() {
 	Requires(drivetrain);
 }
 
-void AutoDefault::Initialize() {
+void AutoPrioritizeSwitchLeft::Initialize() {
 	drivetrain->KillDrive();
-    drivetrain->SetEncoder();
 	Step = 1;
+	pid = new PID(228);
 }
 
-void AutoDefault::Execute() {
-
+void AutoPrioritizeSwitchLeft::Execute() {
 	switch (Step) {
 		default: {
 			drivetrain->KillDrive();
 			End();
 		}
 		case 1: {
+			drivetrain->SetPID(228);
+			std::cout << "GETPID" << this->pid->GetPI() << std::endl;
 			if (drivetrain->DriveInches(228, 1)) {
 				Step = 2;
 			}
@@ -58,18 +59,18 @@ void AutoDefault::Execute() {
 			}
 			break;
 		}
-		// end switch case
+			// end switch case
 	}
 }
 
-void AutoDefault::Interrupted() {
-	End();
-}
-
-void AutoDefault::End() {
+void AutoPrioritizeSwitchLeft::End() {
 	drivetrain->KillDrive();
 }
 
-bool AutoDefault::IsFinished() {
-	return false;
+void AutoPrioritizeSwitchLeft::Interrupted() {
+	End();
+}
+
+bool AutoPrioritizeSwitchLeft::IsFinished() {
+	return Step == 10;
 }

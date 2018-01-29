@@ -2,7 +2,7 @@
 // Created by robotics on 1/16/2018.
 //
 
-#include "AutoPrioritizeSwitchRight.h"
+#include "PrioritizeSwitchRight.h"
 using namespace std;
 
 AutoPrioritizeSwitchRight::AutoPrioritizeSwitchRight() {

@@ -27,11 +27,13 @@
 #include <TimedRobot.h>
 #include "CommandBase.h"
 #include "Commands/TeleopDefault.h"
-#include "Commands/AutoDefault.h"
+#include "Commands/Auto/Default.h"
 #include "Commands/ResetGyro.h"
 #include "Commands/DoNothing.h"
-#include "Commands/AutoPrioritizeSwitchLeft.h"
-#include "Commands/AutoPrioritizeSwitchRight.h"
+#include "Commands/Auto/PrioritizeSwitchLeft.h"
+#include "Commands/Auto/PrioritizeSwitchRight.h"
+#include "Commands/Auto/PrioritizeScaleLeft.h"
+#include "Commands/Auto/PrioritizeScaleRight.h"
 #include <iostream>
 
 
@@ -50,6 +52,7 @@ public:
 	void RobotInit() override {
         CommandBase::Init();
 		resetGyro = new ResetGyro();
+		CommandBase::drivetrain->Calibrate();
 	}
 
 	void DisabledInit() override {
@@ -61,9 +64,10 @@ public:
 
 		AutonomousChooser.AddObject("[LEFT] Switch", new AutoPrioritizeSwitchLeft());
 		AutonomousChooser.AddObject("[RIGHT] Switch", new AutoPrioritizeSwitchRight());
+		AutonomousChooser.AddObject("[LEFT] Scale", new AutoPrioritizeScaleLeft());
+		AutonomousChooser.AddObject("[RIGHT] Scale", new AutoPrioritizeScaleRight());
 
-
-		CommandBase::drivetrain->Calibrate();
+		CommandBase::drivetrain->ResetGyro();
 		CommandBase::drivetrain->SetRefAngle(CommandBase::drivetrain->GetGyro());
 
 		SmartDashboard::PutData("Teleop Modes", &TeleopChooser);

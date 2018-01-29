@@ -2,7 +2,7 @@
 // Created by Eric on 1/11/2018.
 //
 
-#include "../CommandBase.h"
+#include "../../CommandBase.h"
 
 #ifndef POWERUP_AUTODEFAULT_H
 #define POWERUP_AUTODEFAULT_H

@@ -8,44 +8,51 @@
 
 class DriveTrain : public frc::Subsystem {
 private:
-	WPI_TalonSRX *LeftSideA, *LeftSideB, *RightSideA, *RightSideB;
-	//void DriveInternal(double,double,double,double);
-
+	// Delineate Objects //
+	WPI_TalonSRX *LeftSideA, *LeftSideB, *RightSideA, *RightSideB, *Lift;
 	FeedbackDevice *LeftSideQuadrature, *RightSideQuadrature;
-
 	DigitalInput *LeftSwitch, *RightSwitch;
-
 	AnalogInput * AnInput;
     ADXRS450_Gyro * Gyro;
-	double RefAngle;
 	PID * pid;
+
+	// Delineate Data //
+	double RefAngle;
 
 public:
 	DriveTrain();
-	bool GetLeftSwitch();
-	bool GetRightSwitch();
 	void Initialize();
+
+	// Drive Functions //
 	void Drive(double);
 	void Drive(double,double);
 	void KillDrive();
 	void DriveStraight(double, double);
-    bool DriveInches(double, double);
-    void SetEncoder();
-	double GetEncoder();
-	double GetDistance();
-    double GetGyro();
-    void Calibrate();
-    bool TurnAngle(double);
-    void Turn(double);
+	bool DriveInches(double, double);
+
+	bool TurnAngle(double);
+	bool TurnToAngle(double);
+	void Turn(double);
 
 	void SetLeft(double);
 	void SetRight(double);
+	void SetLift(double);
 
-	void SetPID(double);
-
-
-
+	// Data Getters //
+	bool GetLeftSwitch();
+	bool GetRightSwitch();
+	double GetEncoder();
+	double GetDistance();
+	double GetGyro();
+	double GetLeftTalon();
+	double GetRightTalon();
 	double GetRefAngle();
+
+	// Data Setters //
+	void SetEncoder();
+    void Calibrate();
+	void ResetGyro();
+	void SetPID(double);
 	void SetRefAngle(double);
 };
 

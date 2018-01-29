@@ -18,6 +18,7 @@ constexpr auto RIGHTCANENCODER = 1;
 constexpr auto LEFTCANENCODER = 2;
 constexpr auto RIGHTCANBASIC = 3;
 constexpr auto LEFTCANBASIC = 4;
+constexpr auto LIFTCAN = 6;
 
 // Solenoids //
 constexpr auto SolenoidPort1 =  0;

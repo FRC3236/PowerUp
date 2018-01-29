@@ -16,6 +16,7 @@ DriveTrain::DriveTrain() : Subsystem("DriveTrain") {
 	RightSideA = new WPI_TalonSRX(RIGHTCANENCODER);
 	LeftSideB = new WPI_TalonSRX(LEFTCANBASIC);
 	RightSideB = new WPI_TalonSRX(RIGHTCANBASIC);
+	Lift = new WPI_TalonSRX(LIFTCAN);
 
 	LeftSideQuadrature = new FeedbackDevice(QuadEncoder);
 	RightSideQuadrature = new FeedbackDevice(QuadEncoder);
@@ -35,6 +36,7 @@ DriveTrain::DriveTrain() : Subsystem("DriveTrain") {
 	SetName("DriveTrain");
 	pid = new PID(0);
 }
+
 bool DriveTrain::GetLeftSwitch(){
 	return LeftSwitch->Get();
 }
@@ -57,12 +59,9 @@ void DriveTrain::SetRight(double speed) {
 	RightSideB->Set(speed);
 }
 
-
 void DriveTrain::Drive(double leftSpeed, double rightSpeed) {
 	SetLeft(leftSpeed);
 	SetRight(rightSpeed);
-
-	return;
 }
 
 void DriveTrain::Drive(double speed) {
@@ -78,42 +77,47 @@ void DriveTrain::Turn(double speed) {
 bool DriveTrain::DriveInches(double inches, double speed) {
     double distance = GetEncoder();
 	double err = (inches - distance) / inches;
-    if (distance > inches) {
+
+	if (distance > inches) {
 		speed = 0;
 	}
-	this->pid->Update(distance);
-    DriveStraight(fmax(speed * err,0.25), RefAngle);
+
+	DriveStraight(fmax(speed * err,0.25), RefAngle);
 	SmartDashboard::PutNumber("Error", distance);
+
 	return (distance > inches);
 }
+
 double DriveTrain::GetGyro() {
 	return Gyro->GetAngle();
 }
 
-void DriveTrain::SetEncoder(){
+void DriveTrain::SetEncoder() {
     LeftSideA->SetSelectedSensorPosition(0, 0, 0);
 	RightSideA->SetSelectedSensorPosition(0, 0, 0);
 }
 
-double DriveTrain::GetEncoder(){
-	double SideA = LeftSideA->GetSelectedSensorPosition(0) / 1440.0 * 6.0 * M_PI;
-	//double SideB = -(RightSideA->GetSelectedSensorPosition(0) / 1440.0 * 6.0 * M_PI);
-	//return (SideA + SideB) / 2;
-	return SideA;
+double DriveTrain::GetEncoder() {
+	return LeftSideA->GetSelectedSensorPosition(0) / 1440.0 * 6.0 * M_PI;
 }
 
 void DriveTrain::DriveStraight(double speed, double refAngle) {
 	double currentAngle = Gyro->GetAngle();
 	double error = currentAngle - refAngle;
-	//SmartDashboard::PutNumber("Error", error);
 	double marginOfError = 1.6;
 	double constSpeedChange = 0.03;
 	double maxAngle = 15;
-	std::cout << (error/maxAngle) << std::endl;
 	double correction = constSpeedChange * ((error/maxAngle)/2);
+
+	std::cout << (error/maxAngle) << std::endl;
+
+	// PID is still in beta and if it doesn't work we can revert //
+	//              to pure proportional control                 //
+	this->pid->Update(currentAngle);
+
 	if (fabs(error) > marginOfError) {
 		if (currentAngle > refAngle) {
-			Drive(fmin(speed-this->pid->GetPI(), speed-0.3), -(speed));
+			Drive(fmin(speed - this->pid->GetPI(), speed - 0.3), -(speed));
 		} else {
 			Drive(speed, -(fmin(speed-this->pid->GetPI(), speed-0.3)));
 		}
@@ -123,18 +127,15 @@ void DriveTrain::DriveStraight(double speed, double refAngle) {
 
 }
 
-bool DriveTrain::TurnAngle(double angle){
-    double turn;
+bool DriveTrain::TurnAngle(double angle) {
+    double turn = 0.5;
     double current = Gyro->GetAngle();
 	double targetAngle = RefAngle + angle;
 	double error = ((targetAngle - current) / angle);
-    if (targetAngle > 0) {
-		turn = 0.5;
-	} else {
-		turn = -0.5;
-	}
 	double speed = fmax(turn * error, 0.2);
-
+	if (targetAngle < current) {
+		speed = -speed;
+	}
 	Turn(speed);
 	std::cout << Gyro->GetAngle() << " " << targetAngle << std::endl;
 	if (fabs(Gyro->GetAngle()) >  fabs(targetAngle)) {
@@ -152,7 +153,28 @@ bool DriveTrain::TurnAngle(double angle){
 	return (fabs(Gyro->GetAngle()) > fabs(targetAngle));
 }
 
-void DriveTrain::Calibrate(){
+bool DriveTrain::TurnToAngle(double target) {
+	double current = Gyro->GetAngle();
+	double marginOfError = 2;
+	double error = ((fabs(target) - fabs(current)) / fabs(target));
+	//std::cout << error << std::endl;
+	double turn = 0.5;
+	double speed = fmax(turn * error, 0.2);
+	if (target < current) {
+		speed = -speed;
+	}
+	std::cout << speed << std::endl;
+	if (fabs(current) < fabs(target)) {
+		Turn(speed);
+	}
+	return fabs(current) > fabs(target);
+}
+
+void DriveTrain::ResetGyro() {
+	Gyro->Reset();
+}
+
+void DriveTrain::Calibrate() {
     Gyro->Calibrate();
 }
 
@@ -160,21 +182,12 @@ double DriveTrain::GetDistance() {
 	return this->AnInput->GetVoltage() / 0.0049 / 2.54 / 12;
 }
 
-/**
-	Runs once the SystemBase initializes the DriveTrain
-
-	@return void
-*/
 void DriveTrain::Initialize() {
 	KillDrive();
 
 	return;
 }
-/**
-	Stops all Talon SRX's
 
-	@return void
-*/
 void DriveTrain::KillDrive() {
 	Drive(0,0);
 
@@ -187,4 +200,14 @@ void DriveTrain::SetRefAngle(double newRefAngle) {
 
 double DriveTrain::GetRefAngle() {
 	return RefAngle;
+}
+
+double DriveTrain::GetLeftTalon() {
+	return LeftSideA->Get();
+}
+double DriveTrain::GetRightTalon() {
+	return RightSideA->Get();
+}
+void DriveTrain::SetLift(double speed) {
+	Lift->Set(speed);
 }
