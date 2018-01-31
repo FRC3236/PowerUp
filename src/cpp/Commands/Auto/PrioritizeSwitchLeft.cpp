@@ -13,7 +13,7 @@ AutoPrioritizeSwitchLeft::AutoPrioritizeSwitchLeft() {
 void AutoPrioritizeSwitchLeft::Initialize() {
 	drivetrain->KillDrive();
 	Step = 1;
-	pid = new PID(228);
+	pid = new PID(0);
 }
 
 void AutoPrioritizeSwitchLeft::Execute() {
@@ -23,7 +23,7 @@ void AutoPrioritizeSwitchLeft::Execute() {
 			End();
 		}
 		case 1: {
-			drivetrain->SetPID(228);
+			drivetrain->SetPID(0);
 			std::cout << "GETPID" << this->pid->GetPI() << std::endl;
 			if (drivetrain->DriveInches(228, 1)) {
 				Step = 2;
@@ -31,6 +31,7 @@ void AutoPrioritizeSwitchLeft::Execute() {
 			break;
 		}
 		case 2: {
+			drivetrain->SetPID(90);
 			if (drivetrain->TurnAngle(90)) {
 				drivetrain->SetEncoder();
 				drivetrain->SetRefAngle(drivetrain->GetGyro());
@@ -47,6 +48,7 @@ void AutoPrioritizeSwitchLeft::Execute() {
 				dist = 150;
 				speed = 0.75;
 			}
+			drivetrain->SetPID(90);
 			if (drivetrain->DriveInches(dist, speed)) {
 				drivetrain->SetRefAngle(drivetrain->GetGyro());
 				Step = 4;

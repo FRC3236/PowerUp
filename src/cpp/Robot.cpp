@@ -29,6 +29,7 @@
 #include "Commands/TeleopDefault.h"
 #include "Commands/Auto/Default.h"
 #include "Commands/DoNothing.h"
+#include "Commands/ResetGyro.h"
 #include "Commands/Auto/PrioritizeSwitchLeft.h"
 #include "Commands/Auto/PrioritizeSwitchRight.h"
 #include "Commands/Auto/PrioritizeScaleLeft.h"
@@ -49,19 +50,21 @@ private:
 	unique_ptr<Command> TeleMode;
 
 	Command * Teleop = new TeleopDefault();
+	Command * DashResetGyro;
+	Command * AutoLeftSwitch; //, AutoLeftScale, AutoCenterSwitch, AutoCenterScale, AutoRightSwitch, AutoRightScale, AutoDefault;
 
 public:
 	void RobotInit() override {
         CommandBase::Init();
 		CommandBase::drivetrain->Calibrate();
+
+		AutoLeftSwitch = new AutoPrioritizeSwitchLeft();
+		DashResetGyro = new ResetGyro();
 	}
 
 	void DisabledInit() override {
         Scheduler::GetInstance()->ResetAll();
         Scheduler::GetInstance()->RemoveAll();
-
-		TeleopChooser.AddDefault("Default Driver", new TeleopDefault());
-		AutonomousChooser.AddDefault("Default Auto", new AutoDefault());
 
 		StartingPositionChooser.AddDefault("LEFT", 0);
 		StartingPositionChooser.AddObject("CENTER", 1);
@@ -70,61 +73,65 @@ public:
 		PriorityChooser.AddDefault("SWITCH", 0);
 		PriorityChooser.AddObject("SCALE", 1);
 
-		AutonomousChooser.AddObject("[LEFT] Switch", new AutoPrioritizeSwitchLeft());
-		AutonomousChooser.AddObject("[RIGHT] Switch", new AutoPrioritizeSwitchRight());
-		AutonomousChooser.AddObject("[LEFT] Scale", new AutoPrioritizeScaleLeft());
-		AutonomousChooser.AddObject("[RIGHT] Scale", new AutoPrioritizeScaleRight());
-
 		CommandBase::drivetrain->ResetGyro();
 		CommandBase::drivetrain->SetRefAngle(CommandBase::drivetrain->GetGyro());
 
-		//SmartDashboard::PutData("Teleop Modes", &TeleopChooser);
-		SmartDashboard::PutData("Auto Modes", &AutonomousChooser);
-
 		SmartDashboard::PutData("Starting Position", &StartingPositionChooser);
 		SmartDashboard::PutData("Auto Priority", &PriorityChooser);
+
+		// Place a bunch of text displays for use or whatever //
+		SmartDashboard::PutString("Text Display 1", "");
+		SmartDashboard::PutString("Text Display 2", "");
+		SmartDashboard::PutString("Text Display 3", "");
 
         SmartDashboard::PutNumber("Gyro", 0);
 		SmartDashboard::PutNumber("Error", 0);
 
 		SmartDashboard::PutString("Field Layout", "Unknown");
+		SmartDashboard::PutData("Reset Gyro", DashResetGyro);
 	}
 
 	void DisabledPeriodic() override {
 		SmartDashboard::PutNumber("Gyro", CommandBase::drivetrain->GetGyro());
-
 	}
+
 	void AutonomousInit() override {
-		/* AutoMode.release();
-		AutoMode.reset(AutonomousChooser.GetSelected());
-		if (AutoMode != nullptr) {
-			AutoMode->Start();
-		}*/
+
+		/*
+		 * StartPos Cases:
+		 * 		0: Left
+		 * 		1: Center
+		 * 		2: Right
+		 *
+		 * Priority Cases:
+		 * 		0: Switch
+		 * 		1: Scale
+		 */
 
 		int StartPos = StartingPositionChooser.GetSelected();
 		int Priority = PriorityChooser.GetSelected();
 
 		switch (StartPos) {
 			default: {
-
+				CommandBase::drivetrain->KillDrive();
 			}
 			case 0: {
 				switch (Priority) {
 					default: {
-
+						CommandBase::drivetrain->KillDrive();
 					}
 					case 0: {
-
+						AutoLeftSwitch->Start();
 					}
 					case 1: {
-
+						// AutoLeftScale()->Start(); //
 					}
 				}
 			}
 			case 1: {
 				switch (Priority) {
 					default: {
-
+						CommandBase::drivetrain->KillDrive();
 					}
 					case 0: {
 
@@ -137,7 +144,7 @@ public:
 			case 2: {
 				switch (Priority) {
 					default: {
-
+						CommandBase::drivetrain->KillDrive();
 					}
 					case 0: {
 

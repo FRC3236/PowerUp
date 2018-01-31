@@ -25,13 +25,10 @@ void TeleopDefault::Execute() {
 
 	if (controls->RightJoystick->GetRawButton(1)){
 		drivetrain->SetLift(controls->RightJoystick->GetRawAxis(3));
-	}
-	else{
+	} else {
 		drivetrain->SetLift(0);
 	}
 
-	frc::SmartDashboard::PutBoolean("Right Switch", drivetrain->GetRightSwitch());
-	frc::SmartDashboard::PutBoolean("Left Switch", drivetrain->GetLeftSwitch());
 	frc::SmartDashboard::PutNumber("Error", avg);
 }
 

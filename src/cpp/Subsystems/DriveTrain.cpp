@@ -98,6 +98,7 @@ void DriveTrain::SetEncoder() {
 }
 
 double DriveTrain::GetEncoder() {
+	SmartDashboard::PutNumber("Text Display 1", (LeftSideA->GetSelectedSensorPosition(0) / 1440.0 * 6.0 * M_PI));
 	return LeftSideA->GetSelectedSensorPosition(0) / 1440.0 * 6.0 * M_PI;
 }
 
@@ -107,19 +108,19 @@ void DriveTrain::DriveStraight(double speed, double refAngle) {
 	double marginOfError = 1.6;
 	double constSpeedChange = 0.03;
 	double maxAngle = 15;
-	double correction = constSpeedChange * ((error/maxAngle)/2);
-
-	std::cout << (error/maxAngle) << std::endl;
 
 	// PID is still in beta and if it doesn't work we can revert //
 	//              to pure proportional control                 //
 	this->pid->Update(currentAngle);
+	double correction = (this->pid->GetPI() / 100)/2;
+	correction = fmin(speed - correction, speed - 0.2);
+	//std::cout << "[DriveTrain] " << correction << std::endl;
 
 	if (fabs(error) > marginOfError) {
 		if (currentAngle > refAngle) {
-			Drive(fmin(speed - this->pid->GetPI(), speed - 0.3), -(speed));
+			Drive(correction, -(speed));
 		} else {
-			Drive(speed, -(fmin(speed-this->pid->GetPI(), speed-0.3)));
+			Drive(speed, -correction);
 		}
 	} else {
 		Drive(speed);
@@ -129,13 +130,19 @@ void DriveTrain::DriveStraight(double speed, double refAngle) {
 
 bool DriveTrain::TurnAngle(double angle) {
     double turn = 0.5;
+
     double current = Gyro->GetAngle();
+
 	double targetAngle = RefAngle + angle;
 	double error = ((targetAngle - current) / angle);
-	double speed = fmax(turn * error, 0.2);
+	this->pid->Update(current);
+	double speed = fmax((turn * error) /2, 0.1);
+
+
 	if (targetAngle < current) {
 		speed = -speed;
 	}
+	std::cout << speed << std::endl;
 	Turn(speed);
 	std::cout << Gyro->GetAngle() << " " << targetAngle << std::endl;
 	if (fabs(Gyro->GetAngle()) >  fabs(targetAngle)) {

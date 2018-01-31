@@ -6,7 +6,7 @@
 
 PID::PID(double point) {
 	this->PFac = 1;
-	this->IFac = 1;
+	this->IFac = 0.1;
 	this->DFac = 1;
 
 	this->Reset(point);
@@ -22,8 +22,8 @@ double PID::Point() {
 
 void PID::Update(double factor) {
 	this->P = this->point - factor;
-	this->I += (this->P * 0.02);
-	this->D = (this->P - this->preverror) / 0.02;
+	this->I += (this->P);
+	this->D = (this->P - this->preverror);
 
 	this->preverror = this->P;
 }
