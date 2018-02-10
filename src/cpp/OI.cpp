@@ -8,6 +8,6 @@
 #include "OI.h"
 
 OI::OI() {
-	LeftJoystick = new Joystick(LEFTJOYSTICK);
-	RightJoystick = new Joystick(RIGHTJOYSTICK);
+	OperatorStick = new Joystick(LEFTJOYSTICK);
+	DriverStick = new Joystick(RIGHTJOYSTICK);
 }

@@ -15,6 +15,7 @@ void AutoPrioritizeScaleLeft::Initialize() {
 
 void AutoPrioritizeScaleLeft::Execute() {
 	switch (Step) {
+
 		default: {
 			drivetrain->KillDrive();
 			End();

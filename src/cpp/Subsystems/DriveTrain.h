@@ -10,7 +10,7 @@ class DriveTrain : public frc::Subsystem {
 private:
 	// Delineate Objects //
 	WPI_TalonSRX *LeftSideA, *LeftSideB, *RightSideA, *RightSideB, *Lift;
-	FeedbackDevice *LeftSideQuadrature, *RightSideQuadrature;
+	FeedbackDevice *LeftSideQuadrature, *RightSideQuadrature, *LiftQuadrature;
 	DigitalInput *LeftSwitch, *RightSwitch;
 	AnalogInput * AnInput;
     ADXRS450_Gyro * Gyro;
@@ -42,6 +42,7 @@ public:
 	bool GetLeftSwitch();
 	bool GetRightSwitch();
 	double GetEncoder();
+	double GetLiftEncoder();
 	double GetDistance();
 	double GetGyro();
 	double GetLeftTalon();

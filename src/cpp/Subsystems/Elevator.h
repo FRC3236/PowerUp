@@ -11,13 +11,22 @@
 #include "../PID.h"
 
 class Elevator : public frc::Subsystem {
-
+private:
+	WPI_TalonSRX * Motor, * Tray;
+	FeedbackDevice * LiftQuadrature;
 public:
-	DoubleSolenoid *Solenoid1, *Solenoid2, *Solenoid3, *Solenoid4;
-	Compressor *CompressorPort;
 
 	Elevator();
+	void SetEncoder();
+	double GetEncoder();
+	bool GoToPosition(double);
+	void Ascend(double);
+	void Descend(double);
+	void SetMotor(double);
 	void Initialize();
+	void GoToSwitch();
+	bool DeadZone();
+	void SetTray(double);
 };
 
 

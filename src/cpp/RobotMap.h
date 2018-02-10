@@ -15,9 +15,10 @@ constexpr auto RIGHTJOYSTICK = 1;
 
 // Drive Train Stuff //
 constexpr auto RIGHTCANENCODER = 1;
-constexpr auto LEFTCANENCODER = 2;
-constexpr auto RIGHTCANBASIC = 3;
+constexpr auto LEFTCANENCODER = 3;
+constexpr auto RIGHTCANBASIC = 2;
 constexpr auto LEFTCANBASIC = 4;
+constexpr auto TRAYCAN = 5;
 constexpr auto LIFTCAN = 6;
 
 // Solenoids //
@@ -25,6 +26,5 @@ constexpr auto SolenoidPort1 =  0;
 constexpr auto SolenoidPort2 =  2;
 constexpr auto SolenoidPort3 =  4;
 constexpr auto SolenoidPort4 =  6;
-
 
 

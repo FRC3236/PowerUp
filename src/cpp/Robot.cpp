@@ -30,6 +30,7 @@
 #include "Commands/Auto/Default.h"
 #include "Commands/DoNothing.h"
 #include "Commands/ResetGyro.h"
+#include "Commands/ResetEncoders.h"
 #include "Commands/Auto/PrioritizeSwitchLeft.h"
 #include "Commands/Auto/PrioritizeSwitchRight.h"
 #include "Commands/Auto/PrioritizeScaleLeft.h"
@@ -50,8 +51,8 @@ private:
 	unique_ptr<Command> TeleMode;
 
 	Command * Teleop = new TeleopDefault();
-	Command * DashResetGyro;
-	Command * AutoLeftSwitch; //, AutoLeftScale, AutoCenterSwitch, AutoCenterScale, AutoRightSwitch, AutoRightScale, AutoDefault;
+	Command * DashResetGyro, * DashResetEncoders, * AutoLeftSwitch; //, AutoLeftScale, AutoCenterSwitch, AutoCenterScale, AutoRightSwitch, AutoRightScale, AutoDefault;
+
 
 public:
 	void RobotInit() override {
@@ -60,6 +61,7 @@ public:
 
 		AutoLeftSwitch = new AutoPrioritizeSwitchLeft();
 		DashResetGyro = new ResetGyro();
+		DashResetEncoders = new ResetEncoders();
 	}
 
 	void DisabledInit() override {
@@ -89,6 +91,7 @@ public:
 
 		SmartDashboard::PutString("Field Layout", "Unknown");
 		SmartDashboard::PutData("Reset Gyro", DashResetGyro);
+		SmartDashboard::PutData("Reset Encoders", DashResetEncoders);
 	}
 
 	void DisabledPeriodic() override {
@@ -96,6 +99,9 @@ public:
 	}
 
 	void AutonomousInit() override {
+
+		Scheduler::GetInstance()->ResetAll();
+		Scheduler::GetInstance()->RemoveAll();
 
 		/*
 		 * StartPos Cases:
@@ -107,6 +113,8 @@ public:
 		 * 		0: Switch
 		 * 		1: Scale
 		 */
+
+		CommandBase::Field->SetInformation();
 
 		int StartPos = StartingPositionChooser.GetSelected();
 		int Priority = PriorityChooser.GetSelected();
@@ -171,6 +179,8 @@ public:
 	}
 
 	void TeleopPeriodic() override {
+		SmartDashboard::PutNumber("ENCODER#2", CommandBase::drivetrain->GetEncoder());
+
 		Scheduler::GetInstance()->Run();
 	}
 

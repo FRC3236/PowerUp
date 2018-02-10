@@ -24,7 +24,6 @@ void AutoPrioritizeSwitchLeft::Execute() {
 		}
 		case 1: {
 			drivetrain->SetPID(0);
-			std::cout << "GETPID" << this->pid->GetPI() << std::endl;
 			if (drivetrain->DriveInches(228, 1)) {
 				Step = 2;
 			}
@@ -40,11 +39,9 @@ void AutoPrioritizeSwitchLeft::Execute() {
 			break;
 		}
 		case 3: {
-			double dist = 66;
+			double dist = 12;
 			double speed = 0.6;
-			string INFOS = frc::DriverStation::GetInstance().GetGameSpecificMessage();
-			string SIDE = "R";
-			if (INFOS[0] == SIDE[0]) {
+			if (Field->GetSwitch()) {
 				dist = 150;
 				speed = 0.75;
 			}

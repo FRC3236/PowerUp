@@ -16,7 +16,6 @@ DriveTrain::DriveTrain() : Subsystem("DriveTrain") {
 	RightSideA = new WPI_TalonSRX(RIGHTCANENCODER);
 	LeftSideB = new WPI_TalonSRX(LEFTCANBASIC);
 	RightSideB = new WPI_TalonSRX(RIGHTCANBASIC);
-	Lift = new WPI_TalonSRX(LIFTCAN);
 
 	LeftSideQuadrature = new FeedbackDevice(QuadEncoder);
 	RightSideQuadrature = new FeedbackDevice(QuadEncoder);
@@ -52,6 +51,7 @@ void DriveTrain::SetLeft(double speed) {
 
 void DriveTrain::SetPID(double fac) {
 	this->pid->Point(fac);
+	this->pid->Reset(fac);
 }
 
 void DriveTrain::SetRight(double speed) {
@@ -99,22 +99,22 @@ void DriveTrain::SetEncoder() {
 
 double DriveTrain::GetEncoder() {
 	SmartDashboard::PutNumber("Text Display 1", (LeftSideA->GetSelectedSensorPosition(0) / 1440.0 * 6.0 * M_PI));
+	SmartDashboard::PutNumber("Text Display 2", (LeftSideA->GetSelectedSensorPosition(0) / 1440.0 * 6.0 * M_PI));
 	return LeftSideA->GetSelectedSensorPosition(0) / 1440.0 * 6.0 * M_PI;
 }
+
 
 void DriveTrain::DriveStraight(double speed, double refAngle) {
 	double currentAngle = Gyro->GetAngle();
 	double error = currentAngle - refAngle;
 	double marginOfError = 1.6;
-	double constSpeedChange = 0.03;
-	double maxAngle = 15;
 
 	// PID is still in beta and if it doesn't work we can revert //
 	//              to pure proportional control                 //
 	this->pid->Update(currentAngle);
 	double correction = (this->pid->GetPI() / 100)/2;
 	correction = fmin(speed - correction, speed - 0.2);
-	//std::cout << "[DriveTrain] " << correction << std::endl;
+	std::cout << "[DriveTrain] " << correction << std::endl;
 
 	if (fabs(error) > marginOfError) {
 		if (currentAngle > refAngle) {
@@ -142,9 +142,9 @@ bool DriveTrain::TurnAngle(double angle) {
 	if (targetAngle < current) {
 		speed = -speed;
 	}
-	std::cout << speed << std::endl;
+	//std::cout << speed << std::endl;
 	Turn(speed);
-	std::cout << Gyro->GetAngle() << " " << targetAngle << std::endl;
+	//std::cout << Gyro->GetAngle() << " " << targetAngle << std::endl;
 	if (fabs(Gyro->GetAngle()) >  fabs(targetAngle)) {
 		Turn(0);
 	}
@@ -214,7 +214,4 @@ double DriveTrain::GetLeftTalon() {
 }
 double DriveTrain::GetRightTalon() {
 	return RightSideA->Get();
-}
-void DriveTrain::SetLift(double speed) {
-	Lift->Set(speed);
 }
