@@ -3,19 +3,18 @@
 #include "../CommandBase.h"
 #include "../RobotMap.h"
 
+bool GrabberButton = true;
+
 #include <iostream>
 using namespace std;
 TeleopDefault::TeleopDefault() {
 	Requires(drivetrain);
 	Requires(elevator);
+	Requires(cubegrabber);
 }
 
 // Called just before this Command runs the first time
 void TeleopDefault::Initialize() {
-	Requires(drivetrain);
-	Requires(elevator);
-	Requires(cubegrabber);
-
 	drivetrain->SetEncoder();
 	elevator->SetEncoder();
 
@@ -26,14 +25,14 @@ void TeleopDefault::Execute() {
 	double forwardSpeed, lateralSpeed;
 	forwardSpeed = controls->DriverStick->GetY();
 	lateralSpeed = controls->DriverStick->GetX();
-	///climbSpeed  = controls->LeftJoystick->GetY();
+
 	drivetrain->GetEncoder();
 	drivetrain->Drive(lateralSpeed - forwardSpeed, lateralSpeed + forwardSpeed);
 	double avg = ((lateralSpeed - forwardSpeed) + (lateralSpeed - forwardSpeed)) / 2;
 
-	std::cout << controls->OperatorStick->GetPOV() << std::endl;
+	//std::cout << "[elevator shtuff]" << elevator->Tray->GetOutputCurrent() << std::endl;
 
-	if (controls->OperatorStick->GetRawButton(0)) {
+	if (controls->OperatorStick->GetRawButton(1)) {
 		if (controls->OperatorStick->GetY() >= 0) {
 			elevator->Descend(controls->OperatorStick->GetY() /2);
 		} else {
@@ -43,12 +42,23 @@ void TeleopDefault::Execute() {
 		elevator->SetMotor(0);
 	}
 
-	if (controls->OperatorStick->GetRawButton(5)) {
+	if (controls->OperatorStick->GetRawButtonPressed(5) /*&& GrabberButton*/) {
 		if (cubegrabber->Opened) {
 			cubegrabber->Retract();
 		} else {
 			cubegrabber->Extend();
 		}
+		GrabberButton = false;
+	} else {
+		GrabberButton = true;
+	}
+
+	if (controls->OperatorStick->GetPOV() == 0) {
+		elevator->SetTray(1);
+	} else if (controls->OperatorStick->GetPOV() == 180) {
+		elevator->SetTray(-1);
+	} else {
+		elevator->SetTray(0);
 	}
 
 	frc::SmartDashboard::PutNumber("Error", avg);

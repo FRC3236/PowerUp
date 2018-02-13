@@ -8,7 +8,10 @@
 #include <cmath>
 
 //8650 is the top of the elevator//
-double MaxHeight = 8650;
+double MaxHeight = 8750;
+int count = 0;
+double avg = 0;
+int stalled = -1; // 0 means stalled forward, 1 is stalled backwards
 
 Elevator::Elevator() : Subsystem("Elevator"){
 	Motor = new WPI_TalonSRX(LIFTCAN);
@@ -22,6 +25,7 @@ Elevator::Elevator() : Subsystem("Elevator"){
 void Elevator::Initialize(){
 	Motor->Set(0);
 	Tray->Set(0);
+
 }
 
 void Elevator::SetMotor(double speed) {
@@ -66,16 +70,36 @@ bool Elevator::GoToPosition(double targetPos) {
 	}
 }
 
-void Elevator::GoToSwitch(){
+void Elevator::GoToSwitch() {
 	GoToPosition(300);
 }
 
-bool Elevator::DeadZone(){
+bool Elevator::DeadZone() {
 	bool DeadBool = (GetEncoder() >= 7000 && Motor->Get() < 0) || (GetEncoder() <= 0 && Motor->Get() > 0);
 	SmartDashboard::PutBoolean("Deadzone", DeadBool);
 	return DeadBool;
 }
 
 void Elevator::SetTray(double speed) {
+	double avglimit = 5;
+	//std::cout << "[elevator SetTray - output]" << Tray->GetOutputCurrent() << " " << (Tray->GetOutputCurrent() < 2 && Tray->GetOutputCurrent() > 0.3) << std::endl;
+	if (Tray->GetOutputCurrent() < 0.5) {
+		count++;
+		avg += Tray->GetOutputCurrent();
+
+		if (count == avglimit) {
+			avg = avg/avglimit;
+			std::cout << "[elevator SetTray - avg]" << avg << std::endl;
+			if (avg > 0.6 && avg < 1) {
+				stalled = (speed < 0);
+				speed = 0;
+			}
+			avg = 0;
+			count = 0;
+		}
+	} else {
+		stalled = -1;
+	}
+	if ((stalled == 0 && speed > 0) || (stalled == 1 && speed < 0)) { speed = 0; std::cout << "Stalled" << std::endl; }
 	Tray->Set(speed);
 }

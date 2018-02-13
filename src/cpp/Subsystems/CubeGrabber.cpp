@@ -11,16 +11,18 @@ CubeGrabber::CubeGrabber() : Subsystem("CubeGrabber") {
 	Opened = true;
 	Solenoid1 = new DoubleSolenoid(SolenoidPort1, SolenoidPort1 + 1);
 
-	StartCompressor();
-	Extend();
+	StopCompressor();
+	//Extend();
 };
 
 void CubeGrabber::Extend() {
+	Solenoid1->Set(DoubleSolenoid::Value::kOff);
 	Solenoid1->Set(DoubleSolenoid::Value::kForward);
 	Opened = true;
 }
 
 void CubeGrabber::Retract() {
+	Solenoid1->Set(DoubleSolenoid::Value::kOff);
 	Solenoid1->Set(DoubleSolenoid::Value::kReverse);
 	Opened = false;
 }

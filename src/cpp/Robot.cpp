@@ -92,6 +92,8 @@ public:
 		SmartDashboard::PutString("Field Layout", "Unknown");
 		SmartDashboard::PutData("Reset Gyro", DashResetGyro);
 		SmartDashboard::PutData("Reset Encoders", DashResetEncoders);
+
+		CommandBase::cubegrabber->Stop();
 	}
 
 	void DisabledPeriodic() override {

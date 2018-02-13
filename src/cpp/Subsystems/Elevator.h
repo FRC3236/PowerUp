@@ -12,10 +12,10 @@
 
 class Elevator : public frc::Subsystem {
 private:
-	WPI_TalonSRX * Motor, * Tray;
+
 	FeedbackDevice * LiftQuadrature;
 public:
-
+	WPI_TalonSRX * Motor, * Tray;
 	Elevator();
 	void SetEncoder();
 	double GetEncoder();

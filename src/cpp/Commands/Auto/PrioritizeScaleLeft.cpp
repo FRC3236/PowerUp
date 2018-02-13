@@ -10,6 +10,9 @@ AutoPrioritizeScaleLeft::AutoPrioritizeScaleLeft(){
 }
 void AutoPrioritizeScaleLeft::Initialize() {
 	drivetrain->KillDrive();
+	if (!CommandBase::Field->GetScale()) {
+		Step = 101;
+	}
 	Step = 1;
 }
 
@@ -30,11 +33,8 @@ void AutoPrioritizeScaleLeft::Execute() {
 			if (drivetrain->TurnAngle(90)) {
 				drivetrain->SetEncoder();
 				drivetrain->SetRefAngle(drivetrain->GetGyro());
-				{
-					Step = 3;
-				}
+				Step = 3;
 			}
-
 			break;
 		}
 		case 3: {
@@ -42,6 +42,12 @@ void AutoPrioritizeScaleLeft::Execute() {
 				End();
 			}
 			break;
+		}
+
+
+
+		case 101: {
+
 		}
 	}
 }
