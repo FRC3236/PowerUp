@@ -54,9 +54,9 @@ void TeleopDefault::Execute() {
 	}
 
 	if (controls->OperatorStick->GetPOV() == 0) {
-		elevator->SetTray(1);
-	} else if (controls->OperatorStick->GetPOV() == 180) {
 		elevator->SetTray(-1);
+	} else if (controls->OperatorStick->GetPOV() == 180) {
+		elevator->SetTray(1);
 	} else {
 		elevator->SetTray(0);
 	}

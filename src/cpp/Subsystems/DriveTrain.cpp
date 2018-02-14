@@ -77,6 +77,7 @@ void DriveTrain::Turn(double speed) {
 bool DriveTrain::DriveInches(double inches, double speed) {
     double distance = GetEncoder();
 	double err = (inches - distance) / inches;
+	std::cout << "[drivetrain driveinches]" << err << " " << distance << std::endl;
 
 	if (distance > inches) {
 		speed = 0;

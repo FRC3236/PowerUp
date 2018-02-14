@@ -8,7 +8,8 @@
 #include <cmath>
 
 //8650 is the top of the elevator//
-double MaxHeight = 8750;
+double MaxHeight = 8300;
+double MaxHeightCapture = MaxHeight - 750;
 int count = 0;
 double avg = 0;
 int stalled = -1; // 0 means stalled forward, 1 is stalled backwards
@@ -34,7 +35,7 @@ void Elevator::SetMotor(double speed) {
 
 void Elevator::Ascend(double speed) {
 	double sp = speed;
-	if (GetEncoder() > 7000) {
+	if (GetEncoder() > MaxHeightCapture) {
 		sp = speed * ((MaxHeight - fabs(GetEncoder())) / MaxHeight)*3;
 	}
 	std::cout << "[elevator a]" << sp << std::endl;
@@ -59,14 +60,21 @@ double Elevator::GetEncoder() {
 }
 
 bool Elevator::GoToPosition(double targetPos) {
+	return GoToPosition(targetPos, 0.5);
+}
+
+bool Elevator::GoToPosition(double targetPos, double speed) {
 	double currentPos = GetEncoder();
 	double marginOfError = 100;
 	if (fabs(currentPos - targetPos) > marginOfError) {
 		if (currentPos < targetPos) {
-			Ascend(0.5);
+			Ascend(speed);
 		} else {
-			Descend(0.5);
+			Descend(speed);
 		}
+		return false;
+	} else {
+		return true;
 	}
 }
 
@@ -102,4 +110,12 @@ void Elevator::SetTray(double speed) {
 	}
 	if ((stalled == 0 && speed > 0) || (stalled == 1 && speed < 0)) { speed = 0; std::cout << "Stalled" << std::endl; }
 	Tray->Set(speed);
+}
+
+void Elevator::ExtendTray() {
+
+}
+
+void Elevator::RetractTray() {
+
 }

@@ -11,8 +11,8 @@ CubeGrabber::CubeGrabber() : Subsystem("CubeGrabber") {
 	Opened = true;
 	Solenoid1 = new DoubleSolenoid(SolenoidPort1, SolenoidPort1 + 1);
 
-	StopCompressor();
-	//Extend();
+	StartCompressor();
+	Retract();
 };
 
 void CubeGrabber::Extend() {

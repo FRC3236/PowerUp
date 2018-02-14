@@ -51,7 +51,7 @@ private:
 	unique_ptr<Command> TeleMode;
 
 	Command * Teleop = new TeleopDefault();
-	Command * DashResetGyro, * DashResetEncoders, * AutoLeftSwitch; //, AutoLeftScale, AutoCenterSwitch, AutoCenterScale, AutoRightSwitch, AutoRightScale, AutoDefault;
+	Command * DashResetGyro, * DashResetEncoders, * AutoLeftSwitch, * AutoLeftScale; //, AutoLeftScale, AutoCenterSwitch, AutoCenterScale, AutoRightSwitch, AutoRightScale, AutoDefault;
 
 
 public:
@@ -60,6 +60,7 @@ public:
 		CommandBase::drivetrain->Calibrate();
 
 		AutoLeftSwitch = new AutoPrioritizeSwitchLeft();
+		AutoLeftScale = new AutoPrioritizeScaleLeft();
 		DashResetGyro = new ResetGyro();
 		DashResetEncoders = new ResetEncoders();
 	}
@@ -134,7 +135,7 @@ public:
 						AutoLeftSwitch->Start();
 					}
 					case 1: {
-						// AutoLeftScale()->Start(); //
+						AutoLeftScale->Start();
 					}
 				}
 			}

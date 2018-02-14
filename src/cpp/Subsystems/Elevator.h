@@ -20,6 +20,7 @@ public:
 	void SetEncoder();
 	double GetEncoder();
 	bool GoToPosition(double);
+	bool GoToPosition(double,double);
 	void Ascend(double);
 	void Descend(double);
 	void SetMotor(double);
@@ -27,6 +28,8 @@ public:
 	void GoToSwitch();
 	bool DeadZone();
 	void SetTray(double);
+	void ExtendTray();
+	void RetractTray();
 };
 
 
