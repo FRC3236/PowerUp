@@ -3,8 +3,6 @@
 #include "../CommandBase.h"
 #include "../RobotMap.h"
 
-bool GrabberButton = true;
-
 #include <iostream>
 using namespace std;
 TeleopDefault::TeleopDefault() {
@@ -42,15 +40,23 @@ void TeleopDefault::Execute() {
 		elevator->SetMotor(0);
 	}
 
+	if(controls->OperatorStick->GetRawButtonPressed(3)){
+		if (cubegrabber->ArmDown) {
+			cubegrabber->RetractArm();
+		} else {
+			cubegrabber->ExtendArm();
+		}
+	}
 	if (controls->OperatorStick->GetRawButtonPressed(5) /*&& GrabberButton*/) {
 		if (cubegrabber->Opened) {
 			cubegrabber->Retract();
 		} else {
 			cubegrabber->Extend();
 		}
-		GrabberButton = false;
-	} else {
-		GrabberButton = true;
+	}
+
+	if (controls->OperatorStick->GetRawButtonPressed(11)) {
+		cubegrabber->ToggleCompressor();
 	}
 
 	if (controls->OperatorStick->GetPOV() == 0) {
@@ -61,6 +67,7 @@ void TeleopDefault::Execute() {
 		elevator->SetTray(0);
 	}
 
+	frc::SmartDashboard::PutBoolean("COMPRESSOR", cubegrabber->GetCompressor());
 	frc::SmartDashboard::PutNumber("Error", avg);
 	frc::SmartDashboard::PutNumber("ELEVATOR ENCODER", elevator->GetEncoder());
 }

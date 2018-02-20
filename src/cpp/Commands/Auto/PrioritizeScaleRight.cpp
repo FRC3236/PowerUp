@@ -3,61 +3,99 @@
 //
 
 #include "PrioritizeScaleRight.h"
-#include <iostream>
 using namespace std;
 
 AutoPrioritizeScaleRight::AutoPrioritizeScaleRight() {
 	Requires(drivetrain);
+	Requires(elevator);
+	Requires(cubegrabber);
 }
-
 void AutoPrioritizeScaleRight::Initialize() {
 	drivetrain->KillDrive();
-	Step = 1;
+	if (CommandBase::Field->GetScale()) {
+		Step = 1;
+	} else {
+		Step = 101;
+	}
 }
 
 void AutoPrioritizeScaleRight::Execute() {
 	switch (Step) {
+
 		default: {
 			drivetrain->KillDrive();
 			End();
 		}
 		case 1: {
-			drivetrain->SetPID(0);
-			if (drivetrain->DriveInches(228, 1)) {
+			cubegrabber->Retract();
+			if (drivetrain->GetEncoder() > 24) {
+				elevator->GoToPosition(8200, 0.8);
+			}
+			if (drivetrain->DriveInches(320, 1)) {
 				Step = 2;
 			}
 			break;
 		}
 		case 2: {
-			drivetrain->SetPID(-90);
-			if (drivetrain->TurnAngle(-90)) {
-				drivetrain->SetEncoder();
-				drivetrain->SetRefAngle(drivetrain->GetGyro());
-				Step = 3;
+			if (elevator->GoToPosition(8200)) {
+				if (drivetrain->TurnToAngle(-90)) {
+					Step = 3;
+				}
 			}
 			break;
 		}
 		case 3: {
-			double dist = 12;
-			double speed = 0.6;
-			if (Field->GetSwitch()) {
-				dist = 150;
-				speed = 0.75;
-			}
-			drivetrain->SetPID(-90);
-			if (drivetrain->DriveInches(dist, speed)) {
-				drivetrain->SetRefAngle(drivetrain->GetGyro());
-				Step = 4;
+			drivetrain->KillDrive();
+			Step = -1;
+			break;
+		}
+
+
+		case 101: {
+			cubegrabber->Retract();
+			if (drivetrain->DriveInches(228, 1)) {
+				Step = 102;
 			}
 			break;
 		}
-		case 4: {
-			if (drivetrain->TurnAngle(-90)) {
-				End();
+		case 102: {
+			if (drivetrain->TurnToAngle(-90)) {
+				Step = 103;
 			}
 			break;
 		}
-			// end switch case
+		case 103: {
+			elevator->GoToPosition(8200, 0.8);
+			if (drivetrain->DriveInches(250, 1)) {
+				Step = 104;
+			}
+			break;
+		}
+		case 104: {
+			elevator->GoToPosition(8200, 0.8);
+			if (drivetrain->TurnToAngle(0)) {
+				Step = 105;
+			}
+			break;
+		}
+		case 105: {
+			elevator->GoToPosition(8200, 0.8);
+			if (drivetrain->DriveInches(36, 0.8)) {
+				Step = 106;
+			}
+			break;
+		}
+		case 106: {
+			if (drivetrain->TurnToAngle(90)) {
+				Step = 107;
+			}
+			break;
+		}
+		case 107: {
+			//push and drop cube//
+			Step = -1;
+			break;
+		}
 	}
 }
 

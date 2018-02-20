@@ -9,18 +9,21 @@
 class CubeGrabber : public frc::Subsystem {
 private:
 	Compressor * Comp;
-	DoubleSolenoid * Solenoid1;
+	DoubleSolenoid * Solenoid1, * Solenoid2;
 public:
 	CubeGrabber();
 	void Initialize();
 	void Extend();
 	void Retract();
+	void ExtendArm();
+	void RetractArm();
 	void Stop();
 	void StartCompressor();
 	void StopCompressor();
 	void ToggleCompressor();
-
+	bool GetCompressor();
 	bool Opened;
+	bool ArmDown;
 };
 
 

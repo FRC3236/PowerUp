@@ -36,6 +36,8 @@
 #include "Commands/Auto/PrioritizeScaleLeft.h"
 #include "Commands/Auto/PrioritizeScaleRight.h"
 #include <iostream>
+#include <opencv2/core/core.hpp>
+#include <opencv2/imgproc/imgproc.hpp>
 
 
 using namespace frc;
@@ -51,16 +53,36 @@ private:
 	unique_ptr<Command> TeleMode;
 
 	Command * Teleop = new TeleopDefault();
-	Command * DashResetGyro, * DashResetEncoders, * AutoLeftSwitch, * AutoLeftScale; //, AutoLeftScale, AutoCenterSwitch, AutoCenterScale, AutoRightSwitch, AutoRightScale, AutoDefault;
+	Command * DashResetGyro, * DashResetEncoders, * AutoLeftSwitch, * AutoLeftScale, * Default; //, AutoLeftScale, AutoCenterSwitch, AutoCenterScale, AutoRightSwitch, AutoRightScale, AutoDefault;
 
+	/*static void VisionThread() {
+		cs::VideoSource * source = new cs::VideoSource();
+		cs::UsbCamera camera = CameraServer::GetInstance()->StartAutomaticCapture();
+		camera.SetBrightness(20);
+		if (camera.IsConnected()) {
+			camera.SetResolution(640,480);
+			camera.SetFPS(60);
+			cs::CvSink cvSink = CameraServer::GetInstance()->GetVideo();
+			cs::CvSource outputStreamStd = CameraServer::GetInstance()->PutVideo("Color", 640, 480);
+			cv::Mat source;
+			cv::Mat output;
+			while (true) {
+				cvSink.GrabFrame(source);
+				cvtColor(source, output, cv::COLOR_BGR2RGB);
+				outputStreamStd.PutFrame(output);
+			}
+		}
+	}*/
 
 public:
 	void RobotInit() override {
         CommandBase::Init();
 		CommandBase::drivetrain->Calibrate();
+		CommandBase::elevator->SetEncoder();
 
 		AutoLeftSwitch = new AutoPrioritizeSwitchLeft();
 		AutoLeftScale = new AutoPrioritizeScaleLeft();
+		Default = new AutoDefault();
 		DashResetGyro = new ResetGyro();
 		DashResetEncoders = new ResetEncoders();
 	}
@@ -72,6 +94,7 @@ public:
 		StartingPositionChooser.AddDefault("LEFT", 0);
 		StartingPositionChooser.AddObject("CENTER", 1);
 		StartingPositionChooser.AddObject("RIGHT", 2);
+		StartingPositionChooser.AddObject("EMERGENCY DEFAULT", 3);
 
 		PriorityChooser.AddDefault("SWITCH", 0);
 		PriorityChooser.AddObject("SCALE", 1);
@@ -83,9 +106,6 @@ public:
 		SmartDashboard::PutData("Auto Priority", &PriorityChooser);
 
 		// Place a bunch of text displays for use or whatever //
-		SmartDashboard::PutString("Text Display 1", "");
-		SmartDashboard::PutString("Text Display 2", "");
-		SmartDashboard::PutString("Text Display 3", "");
 
         SmartDashboard::PutNumber("Gyro", 0);
 		SmartDashboard::PutNumber("Error", 0);
@@ -93,6 +113,8 @@ public:
 		SmartDashboard::PutString("Field Layout", "Unknown");
 		SmartDashboard::PutData("Reset Gyro", DashResetGyro);
 		SmartDashboard::PutData("Reset Encoders", DashResetEncoders);
+
+		SmartDashboard::PutBoolean("COMPRESSOR", true);
 
 		CommandBase::cubegrabber->Stop();
 	}
@@ -121,7 +143,9 @@ public:
 
 		int StartPos = StartingPositionChooser.GetSelected();
 		int Priority = PriorityChooser.GetSelected();
-
+		std::cout << "[Robot.cpp] Start Pos: " << StartPos << std::endl;
+		std::cout << "[Robot.cpp] Priority: " << Priority << std::endl;
+/*
 		switch (StartPos) {
 			default: {
 				CommandBase::drivetrain->KillDrive();
@@ -165,7 +189,11 @@ public:
 					}
 				}
 			}
-		}
+			case 3: {
+				Default->Start();
+			}
+		}*/
+		AutoLeftScale->Start();
 	}
 
 	void AutonomousPeriodic() override {
@@ -182,8 +210,6 @@ public:
 	}
 
 	void TeleopPeriodic() override {
-		SmartDashboard::PutNumber("ENCODER#2", CommandBase::drivetrain->GetEncoder());
-
 		Scheduler::GetInstance()->Run();
 	}
 

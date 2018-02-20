@@ -23,43 +23,33 @@ void AutoPrioritizeSwitchLeft::Execute() {
 			End();
 		}
 		case 1: {
-			drivetrain->SetPID(0);
-			if (drivetrain->DriveInches(228, 1)) {
+			if (drivetrain->DriveInches(188, 0.9)) { //228
 				Step = 2;
+				//drivetrain->SetEncoder();
 			}
 			break;
 		}
 		case 2: {
-			drivetrain->SetPID(90);
-			if (drivetrain->TurnAngle(90)) {
-				drivetrain->SetEncoder();
-				drivetrain->SetRefAngle(drivetrain->GetGyro());
-				Step = 3;
+			if (drivetrain->TurnToAngle(90)) {
+			Step = 3;
+					//drivetrain->SetEncoder();
+				}
 			}
 			break;
-		}
+
 		case 3: {
-			double dist = 12;
-			double speed = 0.6;
-			if (Field->GetSwitch()) {
-				dist = 150;
-				speed = 0.75;
+			if (drivetrain->DriveInches(12, 0.5)) {
+			Step = 4;
+				}
 			}
-			drivetrain->SetPID(90);
-			if (drivetrain->DriveInches(dist, speed)) {
-				drivetrain->SetRefAngle(drivetrain->GetGyro());
-				Step = 4;
-			}
-			break;
-		}
+		break;
+
 		case 4: {
-			if (drivetrain->TurnAngle(90)) {
-				End();
-			}
-			break;
+
 		}
-			// end switch case
+			break;
 	}
+	frc::SmartDashboard::PutNumber("Current Step", Step);
 }
 
 void AutoPrioritizeSwitchLeft::End() {

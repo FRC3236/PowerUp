@@ -32,6 +32,7 @@ public:
 
 	bool TurnAngle(double);
 	bool TurnToAngle(double);
+	bool TurnToAngle(double,double);
 	void Turn(double);
 
 	void SetLeft(double);

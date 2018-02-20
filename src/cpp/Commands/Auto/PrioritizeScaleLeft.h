@@ -19,6 +19,8 @@ public:
 	void Interrupted() override;
 
 	int Step;
+	double Time;
+	Timer *AutoTimer;
 };
 
 

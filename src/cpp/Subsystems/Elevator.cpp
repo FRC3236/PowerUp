@@ -8,7 +8,7 @@
 #include <cmath>
 
 //8650 is the top of the elevator//
-double MaxHeight = 8300;
+double MaxHeight = 7600;
 double MaxHeightCapture = MaxHeight - 750;
 int count = 0;
 double avg = 0;
@@ -26,7 +26,10 @@ Elevator::Elevator() : Subsystem("Elevator"){
 void Elevator::Initialize(){
 	Motor->Set(0);
 	Tray->Set(0);
+}
 
+void Elevator::SetEncoder() {
+	Motor->SetSelectedSensorPosition(0,0,0);
 }
 
 void Elevator::SetMotor(double speed) {
@@ -36,9 +39,9 @@ void Elevator::SetMotor(double speed) {
 void Elevator::Ascend(double speed) {
 	double sp = speed;
 	if (GetEncoder() > MaxHeightCapture) {
-		sp = speed * ((MaxHeight - fabs(GetEncoder())) / MaxHeight)*3;
+		sp = speed * ((MaxHeight - fabs(GetEncoder())) / MaxHeight)*10;
 	}
-	std::cout << "[elevator a]" << sp << std::endl;
+	//std::cout << "[elevator a]" << sp << std::endl;
 	Motor->Set(-fabs(sp));
 }
 
@@ -47,12 +50,8 @@ void Elevator::Descend(double speed) {
 	if (GetEncoder() < 1000) {
 		sp = speed*(fabs(GetEncoder())/1000);
 	}
-	std::cout << "[elevator d]" << sp << std::endl;
+	//std::cout << "[elevator d]" << sp << std::endl;
 	Motor->Set(fabs(speed));
-}
-
-void Elevator::SetEncoder() {
-	Motor->SetSelectedSensorPosition(0, 0, 0);
 }
 
 double Elevator::GetEncoder() {
@@ -82,9 +81,10 @@ void Elevator::GoToSwitch() {
 	GoToPosition(300);
 }
 
+
+
 bool Elevator::DeadZone() {
 	bool DeadBool = (GetEncoder() >= 7000 && Motor->Get() < 0) || (GetEncoder() <= 0 && Motor->Get() > 0);
-	SmartDashboard::PutBoolean("Deadzone", DeadBool);
 	return DeadBool;
 }
 
@@ -97,7 +97,7 @@ void Elevator::SetTray(double speed) {
 
 		if (count == avglimit) {
 			avg = avg/avglimit;
-			std::cout << "[elevator SetTray - avg]" << avg << std::endl;
+			//std::cout << "[elevator SetTray - avg]" << avg << std::endl;
 			if (avg > 0.6 && avg < 1) {
 				stalled = (speed < 0);
 				speed = 0;

@@ -8,6 +8,7 @@ using namespace std;
 
 AutoDefault::AutoDefault() {
 	Requires(drivetrain);
+	Requires(cubegrabber);
 }
 
 void AutoDefault::Initialize() {
@@ -24,36 +25,9 @@ void AutoDefault::Execute() {
 			End();
 		}
 		case 1: {
-			if (drivetrain->DriveInches(228, 1)) {
-				Step = 2;
-			}
-			break;
-		}
-		case 2: {
-			if (drivetrain->TurnAngle(90)) {
-				drivetrain->SetEncoder();
-				drivetrain->SetRefAngle(drivetrain->GetGyro());
-				Step = 3;
-			}
-			break;
-		}
-		case 3: {
-			double dist = 66;
-			double speed = 0.6;
-			string INFOS = frc::DriverStation::GetInstance().GetGameSpecificMessage();
-			string SIDE = "R";
-			if (INFOS[0] == SIDE[0]) {
-				dist = 150;
-				speed = 0.75;
-			}
-			if (drivetrain->DriveInches(dist, speed)) {
-				drivetrain->SetRefAngle(drivetrain->GetGyro());
-				Step = 4;
-			}
-			break;
-		}
-		case 4: {
-			if (drivetrain->TurnAngle(90)) {
+			cubegrabber->Extend();
+			cubegrabber->RetractArm();
+			if (drivetrain->DriveInches(150, 0.6)) {
 				End();
 			}
 			break;
