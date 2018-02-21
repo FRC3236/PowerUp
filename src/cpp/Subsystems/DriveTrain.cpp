@@ -78,17 +78,27 @@ void DriveTrain::Turn(double speed) {
 
 bool DriveTrain::DriveInches(double inches, double speed) {
     double distance = GetEncoder();
-	double err = (inches - distance) / inches;
-	std::cout << "[DriveTrain.cpp] Drive Inches" << err << " " << distance << std::endl;
+	double err = fabs((inches - distance) / inches);
 
-	if (fabs(distance) > fabs(inches)) {
+	if (err < 0.03) {
 		speed = 0;
 	}
 
-	DriveStraight(fmax(speed * err,0.25), RefAngle);
+	if (speed >= 0) {
+		DriveStraight(fmax(speed * err, 0.25), RefAngle);
+		return (distance > inches);
+	} else {
+		//std::cout << fmin(speed * err, -0.25) << std::endl;
+		//DriveStraight(fmin(speed * err, -0.25), RefAngle);
+		std::cout << speed * err <<  std::endl;
+		Drive(fmax(-(fabs(speed) * err), -0.25));
+		std::cout << (distance > inches) << std::endl;
+		return (distance < inches);
+	}
 	SmartDashboard::PutNumber("Error", distance);
 
-	return (distance > inches);
+	//std::cout << "[DriveTrain](DriveInches) -> Target: " << inches << " | Current: " << distance << " | Error: "  << err << " | Speed: " << speed << std::endl;
+
 }
 
 
@@ -118,15 +128,18 @@ void DriveTrain::DriveStraight(double speed, double refAngle) {
 	this->pid->Update(currentAngle);
 	double correction = (this->pid->GetPI() / 100)/2; // divide by 2
 	correction = fmin(speed - correction, speed - 0.2);
-	//std::cout << "[DriveTrain] " << correction << std::endl;
+	//std::cout << "[DriveTrain Correction] " << correction << std::endl;
 
 	if (fabs(error) > marginOfError) {
 		if (currentAngle > refAngle) {
-			Drive(correction, -(speed));
+			std::cout << "[DriveTrain EEEEE] " << correction << ", " << -(fabs(speed)) << std::endl;
+			Drive(correction, -(fabs(speed)));
 		} else {
-			Drive(speed, -correction);
+			Drive(speed, -(fabs(correction)));
+			std::cout << "[DriveTrain EEEEE] " << speed << ", " << -(fabs(correction)) << std::endl;
 		}
 	} else {
+		std::cout << "[DriveTrain EEEEE] " << speed << std::endl;
 		Drive(speed);
 	}
 
