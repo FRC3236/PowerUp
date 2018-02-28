@@ -45,12 +45,12 @@ using namespace std;
 
 class Robot : public TimedRobot {
 private:
-	SendableChooser<Command*>AutonomousChooser;
-	SendableChooser<Command*> TeleopChooser;
+	//SendableChooser<Command*>AutonomousChooser;
+	//SendableChooser<Command*> TeleopChooser;
 	SendableChooser<int> StartingPositionChooser;
 	SendableChooser<int> PriorityChooser;
-	unique_ptr<Command> AutoMode;
-	unique_ptr<Command> TeleMode;
+	//unique_ptr<Command> AutoMode;
+	//unique_ptr<Command> TeleMode;
 
 	Command * Teleop = new TeleopDefault();
 	Command * DashResetGyro, * DashResetEncoders, * AutoLeftSwitch, * AutoLeftScale, * Default; //, AutoLeftScale, AutoCenterSwitch, AutoCenterScale, AutoRightSwitch, AutoRightScale, AutoDefault;
@@ -145,21 +145,27 @@ public:
 		int Priority = PriorityChooser.GetSelected();
 		std::cout << "[Robot.cpp] Start Pos: " << StartPos << std::endl;
 		std::cout << "[Robot.cpp] Priority: " << Priority << std::endl;
-/*
-		switch (StartPos) {
+
+		/*switch (StartPos) {
 			default: {
 				CommandBase::drivetrain->KillDrive();
 			}
 			case 0: {
 				switch (Priority) {
 					default: {
+						std::cout << "[Auto] LEFT AUTO ERROR" << std::endl;
 						CommandBase::drivetrain->KillDrive();
+						break;
 					}
 					case 0: {
+						std::cout << "[Auto] Starting LEFT SWITCH AUTO" << std::endl;
 						AutoLeftSwitch->Start();
+						break;
 					}
 					case 1: {
+						std::cout << "[Auto] Starting LEFT SCALE AUTO" << std::endl;
 						AutoLeftScale->Start();
+						break;
 					}
 				}
 			}
@@ -167,12 +173,13 @@ public:
 				switch (Priority) {
 					default: {
 						CommandBase::drivetrain->KillDrive();
+						break;
 					}
 					case 0: {
-
+						break;
 					}
 					case 1: {
-
+						break;
 					}
 				}
 			}
@@ -182,18 +189,19 @@ public:
 						CommandBase::drivetrain->KillDrive();
 					}
 					case 0: {
-
+						break;
 					}
 					case 1: {
-
+						break;
 					}
 				}
 			}
 			case 3: {
 				Default->Start();
+				break;
 			}
 		}*/
-		AutoLeftScale->Start();
+		Default->Start();
 	}
 
 	void AutonomousPeriodic() override {

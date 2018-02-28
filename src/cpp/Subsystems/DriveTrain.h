@@ -28,6 +28,7 @@ public:
 	void Drive(double,double);
 	void KillDrive();
 	void DriveStraight(double, double);
+	bool DriveInchesFast(double,double);
 	bool DriveInches(double, double);
 
 	bool TurnAngle(double);
@@ -37,7 +38,7 @@ public:
 
 	void SetLeft(double);
 	void SetRight(double);
-	void SetLift(double);
+	//void SetLift(double);
 
 	// Data Getters //
 	bool GetLeftSwitch();

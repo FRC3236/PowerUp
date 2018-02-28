@@ -25,11 +25,15 @@ void AutoDefault::Execute() {
 			End();
 		}
 		case 1: {
-			cubegrabber->Extend();
+			cubegrabber->Retract();
 			cubegrabber->RetractArm();
-			if (drivetrain->DriveInches(150, 0.6)) {
-				End();
+			if (drivetrain->DriveInches(86, 0.6)) {
+				Step = 2;
 			}
+			break;
+		}
+		case 2: {
+			drivetrain->KillDrive();
 			break;
 		}
 		// end switch case

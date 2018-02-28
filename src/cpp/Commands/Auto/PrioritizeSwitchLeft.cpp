@@ -11,6 +11,7 @@ AutoPrioritizeSwitchLeft::AutoPrioritizeSwitchLeft(){
 	Requires(elevator);
 	Requires(cubegrabber);
 }
+
 void AutoPrioritizeSwitchLeft::Initialize() {
 	drivetrain->KillDrive();
 	if (CommandBase::Field->GetScale()) {
@@ -32,14 +33,14 @@ void AutoPrioritizeSwitchLeft::Execute() {
 			break;
 		}
 		case 1: {
-			elevator->GoToPosition(1200, 0.5);
+			elevator->AscendTo(0.5, 1200);
 			if (drivetrain->DriveInches(180, 1)) {
 				Step = 2;
 			}
 			break;
 		}
 		case 2: {
-			elevator->GoToPosition(1200, 0.5);
+			elevator->AscendTo(0.5, 1200);
 			if (drivetrain->TurnToAngle(90)) {
 				while (floor(drivetrain->GetEncoder()) != 0 ) {
 					drivetrain->SetEncoder();
@@ -49,7 +50,7 @@ void AutoPrioritizeSwitchLeft::Execute() {
 			break;
 		}
 		case 3: {
-			elevator->GoToPosition(1200, 0.5);
+			elevator->AscendTo(0.5, 1200);
 			if (drivetrain->DriveInches(12, 0.5)) {
 				while (floor(drivetrain->GetEncoder()) != 0 ) {
 					drivetrain->SetEncoder();
@@ -60,6 +61,7 @@ void AutoPrioritizeSwitchLeft::Execute() {
 		}
 		case 4: {
 			cubegrabber->Extend();
+			elevator->AscendTo(0.5, 1200);
 			drivetrain->KillDrive();
 			break;
 		}
@@ -82,7 +84,7 @@ void AutoPrioritizeSwitchLeft::Execute() {
 			break;
 		}
 		case 103: {
-			if (drivetrain->DriveInches(200, 1)) {
+			if (drivetrain->DriveInches(150, 1)) {
 				while (floor(drivetrain->GetEncoder()) != 0 ) {
 					drivetrain->SetEncoder();
 				}
@@ -92,9 +94,9 @@ void AutoPrioritizeSwitchLeft::Execute() {
 			break;
 		}
 		case 104: {
-			elevator->GoToPosition(7600, 0.5);
-			if (drivetrain->TurnToAngle(0)) {
-				drivetrain->SetRefAngle(0);
+			elevator->AscendTo(0.5, 1200);
+			if (drivetrain->TurnToAngle(180)) {
+				drivetrain->SetRefAngle(180);
 				while (floor(drivetrain->GetEncoder()) != 0 ) {
 					drivetrain->SetEncoder();
 				}

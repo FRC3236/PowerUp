@@ -22,6 +22,7 @@ public:
 	bool GoToPosition(double);
 	bool GoToPosition(double,double);
 	void Ascend(double);
+	void AscendTo(double, double);
 	void Descend(double);
 	void SetMotor(double);
 	void Initialize();

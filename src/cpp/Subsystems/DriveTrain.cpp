@@ -88,17 +88,43 @@ bool DriveTrain::DriveInches(double inches, double speed) {
 		DriveStraight(fmax(speed * err, 0.25), RefAngle);
 		return (distance > inches);
 	} else {
-		//std::cout << fmin(speed * err, -0.25) << std::endl;
-		//DriveStraight(fmin(speed * err, -0.25), RefAngle);
 		std::cout << speed * err <<  std::endl;
 		Drive(fmax(-(fabs(speed) * err), -0.25));
 		std::cout << (distance > inches) << std::endl;
 		return (distance < inches);
 	}
-	SmartDashboard::PutNumber("Error", distance);
+	//SmartDashboard::PutNumber("Error", distance);
 
 	//std::cout << "[DriveTrain](DriveInches) -> Target: " << inches << " | Current: " << distance << " | Error: "  << err << " | Speed: " << speed << std::endl;
 
+}
+
+bool DriveTrain::DriveInchesFast(double inches, double speed) {
+	double distance = GetEncoder();
+	double startPos = inches * .5;
+
+	double err;
+	if (distance > startPos) {
+
+	} else {
+		err = 1;
+	}
+
+	std::cout << "[DriveTrain DIF] " << err << " " << speed * err << " " << startPos << std::endl;
+
+	if (err < 0.03) {
+		speed = 0;
+	}
+
+	if (speed >= 0) {
+		DriveStraight(fmax(speed * err, 0.25), RefAngle);
+		return (distance > inches);
+	} else {
+		std::cout << speed * err <<  std::endl;
+		Drive(fmax(-(fabs(speed) * err), -0.25));
+		std::cout << (distance > inches) << std::endl;
+		return (distance < inches);
+	}
 }
 
 
@@ -117,7 +143,6 @@ double DriveTrain::GetEncoder() {
 	return LeftSideA->GetSelectedSensorPosition(0) / 1440.0 * 6.0 * M_PI; // was left side but i just switched it
 }
 
-
 void DriveTrain::DriveStraight(double speed, double refAngle) {
 	double currentAngle = Gyro->GetAngle();
 	double error = currentAngle - refAngle;
@@ -132,14 +157,14 @@ void DriveTrain::DriveStraight(double speed, double refAngle) {
 
 	if (fabs(error) > marginOfError) {
 		if (currentAngle > refAngle) {
-			std::cout << "[DriveTrain EEEEE] " << correction << ", " << -(fabs(speed)) << std::endl;
+			std::cout << "[DriveTrain DS] " << correction << ", " << -(fabs(speed)) << std::endl;
 			Drive(correction, -(fabs(speed)));
 		} else {
 			Drive(speed, -(fabs(correction)));
-			std::cout << "[DriveTrain EEEEE] " << speed << ", " << -(fabs(correction)) << std::endl;
+			std::cout << "[DriveTrain DS] " << -(fabs(correction)) << ", " << speed << std::endl;
 		}
 	} else {
-		std::cout << "[DriveTrain EEEEE] " << speed << std::endl;
+		std::cout << "[DriveTrain DS] " << speed << std::endl;
 		Drive(speed);
 	}
 

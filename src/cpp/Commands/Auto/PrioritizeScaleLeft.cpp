@@ -22,6 +22,8 @@ void AutoPrioritizeScaleLeft::Initialize() {
 	} else {
 		Step = 1;
 	}
+
+	std::cout << "AUTO: " << Step << std::endl;
 	cubegrabber->Retract();
 }
 
@@ -113,15 +115,15 @@ void AutoPrioritizeScaleLeft::Execute() {
 			break;
 		}
 		case 9: {
-			if (drivetrain->DriveInches(20, 0.5)) {
-				Step = 10;
+			if (drivetrain->DriveInches(16, 0.5)) {
+				//Step = 10;
 				while (floor(drivetrain->GetEncoder()) != 0 ) {
 					drivetrain->SetEncoder();
 				}
 			}
 			break;
 		}
-		case 10: {
+		/*case 10: {
 			cubegrabber->Retract();
 			elevator->GoToPosition(1500, 0.5);
 			if (!Field->GetSwitch()) {
@@ -154,7 +156,7 @@ void AutoPrioritizeScaleLeft::Execute() {
 				drivetrain->KillDrive();
 			}
 			break;
-		}
+		}*/
 
 
 		case 101: {
@@ -175,7 +177,7 @@ void AutoPrioritizeScaleLeft::Execute() {
 		}
 		case 103: {
 			std::cout << "[Auto] " << drivetrain->GetGyro() << std::endl;
-			if (drivetrain->DriveInches(200, 1)) {
+			if (drivetrain->DriveInches(200, 1.1)) {
 				while (floor(drivetrain->GetEncoder()) != 0 ) {
 					drivetrain->SetEncoder();
 				}
@@ -238,20 +240,6 @@ void AutoPrioritizeScaleLeft::Execute() {
 			}
 			break;
 		}
-
-		case 1000: {
-			if (drivetrain->DriveInches(15, 0.5)) {
-				Step = 1001;
-			}
-			break;
-		}
-		case 1001: {
-			if (drivetrain->DriveInches(-15, -0.5)) {
-				drivetrain->KillDrive();
-			}
-			break;
-		}
-
 	}
 }
 

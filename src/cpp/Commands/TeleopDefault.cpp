@@ -14,7 +14,6 @@ TeleopDefault::TeleopDefault() {
 // Called just before this Command runs the first time
 void TeleopDefault::Initialize() {
 	drivetrain->SetEncoder();
-	elevator->SetEncoder();
 
 }
 

@@ -8,7 +8,7 @@
 #include <cmath>
 
 //8650 is the top of the elevator//
-double MaxHeight = 7600;
+double MaxHeight = 7800;
 double MaxHeightCapture = MaxHeight - 750;
 int count = 0;
 double avg = 0;
@@ -30,6 +30,7 @@ void Elevator::Initialize(){
 
 void Elevator::SetEncoder() {
 	Motor->SetSelectedSensorPosition(0,0,0);
+	std::cout << "[Elevator] Set encoder to 0!" << std::endl;
 }
 
 void Elevator::SetMotor(double speed) {
@@ -40,6 +41,16 @@ void Elevator::Ascend(double speed) {
 	double sp = speed;
 	if (GetEncoder() > MaxHeightCapture) {
 		sp = speed * ((MaxHeight - fabs(GetEncoder())) / MaxHeight)*10;
+	}
+	//std::cout << "[elevator a]" << sp << std::endl;
+	Motor->Set(-fabs(sp));
+}
+
+void Elevator::AscendTo(double speed, double pos) {
+	double sp = speed;
+	pos = fmin(pos, MaxHeightCapture);
+	if (GetEncoder() > pos) {
+		sp = speed * ((pos - fabs(GetEncoder())) / pos)*10;
 	}
 	//std::cout << "[elevator a]" << sp << std::endl;
 	Motor->Set(-fabs(sp));
@@ -75,10 +86,6 @@ bool Elevator::GoToPosition(double targetPos, double speed) {
 	} else {
 		return true;
 	}
-}
-
-void Elevator::GoToSwitch() {
-	GoToPosition(300);
 }
 
 
