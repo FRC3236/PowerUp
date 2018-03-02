@@ -27,7 +27,7 @@ void AutoDefault::Execute() {
 		case 1: {
 			cubegrabber->Retract();
 			cubegrabber->RetractArm();
-			if (drivetrain->DriveInches(86, 0.6)) {
+			if (drivetrain->DriveInchesFast(200, 1)) {
 				Step = 2;
 			}
 			break;
@@ -36,7 +36,6 @@ void AutoDefault::Execute() {
 			drivetrain->KillDrive();
 			break;
 		}
-		// end switch case
 	}
 }
 

@@ -25,7 +25,7 @@ void AutoPrioritizeSwitchLeft::Initialize() {
 }
 
 void AutoPrioritizeSwitchLeft::Execute() {
-	std::cout << "[Auto]" <<  Step << std::endl;
+	std::cout << "[Auto Switch Left]" <<  Step << std::endl;
 	switch (Step) {
 		default: {
 			drivetrain->KillDrive();
@@ -44,6 +44,7 @@ void AutoPrioritizeSwitchLeft::Execute() {
 			if (drivetrain->TurnToAngle(90)) {
 				while (floor(drivetrain->GetEncoder()) != 0 ) {
 					drivetrain->SetEncoder();
+					cubegrabber->ExtendArm();
 				}
 				Step = 3;
 			}

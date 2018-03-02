@@ -11,7 +11,7 @@
 *
 *  =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 *
-*  Lead Programmers: Eric Bernard, Michael Barba, and Tyler Mello
+*  Lead Programmers: Eric Bernard, Michael Barba
 *  Written in 2018 for FIRST PowerUp!
 *
 *  Thanks to all the teams who helped us
@@ -45,34 +45,11 @@ using namespace std;
 
 class Robot : public TimedRobot {
 private:
-	//SendableChooser<Command*>AutonomousChooser;
-	//SendableChooser<Command*> TeleopChooser;
 	SendableChooser<int> StartingPositionChooser;
 	SendableChooser<int> PriorityChooser;
-	//unique_ptr<Command> AutoMode;
-	//unique_ptr<Command> TeleMode;
 
 	Command * Teleop = new TeleopDefault();
-	Command * DashResetGyro, * DashResetEncoders, * AutoLeftSwitch, * AutoLeftScale, * Default; //, AutoLeftScale, AutoCenterSwitch, AutoCenterScale, AutoRightSwitch, AutoRightScale, AutoDefault;
-
-	/*static void VisionThread() {
-		cs::VideoSource * source = new cs::VideoSource();
-		cs::UsbCamera camera = CameraServer::GetInstance()->StartAutomaticCapture();
-		camera.SetBrightness(20);
-		if (camera.IsConnected()) {
-			camera.SetResolution(640,480);
-			camera.SetFPS(60);
-			cs::CvSink cvSink = CameraServer::GetInstance()->GetVideo();
-			cs::CvSource outputStreamStd = CameraServer::GetInstance()->PutVideo("Color", 640, 480);
-			cv::Mat source;
-			cv::Mat output;
-			while (true) {
-				cvSink.GrabFrame(source);
-				cvtColor(source, output, cv::COLOR_BGR2RGB);
-				outputStreamStd.PutFrame(output);
-			}
-		}
-	}*/
+	Command * DashResetGyro, * DashResetEncoders, * AutoLeftSwitch, * AutoLeftScale, * Default;
 
 public:
 	void RobotInit() override {
@@ -92,19 +69,18 @@ public:
         Scheduler::GetInstance()->RemoveAll();
 
 		StartingPositionChooser.AddDefault("LEFT", 0);
-		StartingPositionChooser.AddObject("CENTER", 1);
-		StartingPositionChooser.AddObject("RIGHT", 2);
+		StartingPositionChooser.AddObject("CENTER [DONT CHOOSE ME]", 1);
+		StartingPositionChooser.AddObject("RIGHT [DONT CHOOSE ME]", 2);
 		StartingPositionChooser.AddObject("EMERGENCY DEFAULT", 3);
 
 		PriorityChooser.AddDefault("SWITCH", 0);
 		PriorityChooser.AddObject("SCALE", 1);
-
+		PriorityChooser.AddObject("DEFAULT", 2);
 		CommandBase::drivetrain->ResetGyro();
 		CommandBase::drivetrain->SetRefAngle(CommandBase::drivetrain->GetGyro());
 
 		SmartDashboard::PutData("Starting Position", &StartingPositionChooser);
 		SmartDashboard::PutData("Auto Priority", &PriorityChooser);
-
 		// Place a bunch of text displays for use or whatever //
 
         SmartDashboard::PutNumber("Gyro", 0);
@@ -133,6 +109,7 @@ public:
 		 * 		0: Left
 		 * 		1: Center
 		 * 		2: Right
+		 * 		3: Emergency Default
 		 *
 		 * Priority Cases:
 		 * 		0: Switch
@@ -146,42 +123,73 @@ public:
 		std::cout << "[Robot.cpp] Start Pos: " << StartPos << std::endl;
 		std::cout << "[Robot.cpp] Priority: " << Priority << std::endl;
 
+		switch (Priority) {
+			default: {
+				std::cout << "[Auto] LEFT AUTO ERROR" << std::endl;
+				CommandBase::drivetrain->KillDrive();
+				return;
+			}
+			case 0: {
+				std::cout << "[Auto] Starting LEFT SWITCH AUTO" << std::endl;
+				AutoLeftSwitch->Start();
+				return;
+			}
+			case 1: {
+				std::cout << "[Auto] Starting LEFT SCALE AUTO" << std::endl;
+				AutoLeftScale->Start();
+				return;
+			}
+			case 2: {
+				std::cout << "[Auto] Starting DEFAULT AUTO" << std::endl;
+				Default->Start();
+				return;
+			}
+		}
+
 		/*switch (StartPos) {
 			default: {
 				CommandBase::drivetrain->KillDrive();
+				return;
 			}
 			case 0: {
 				switch (Priority) {
 					default: {
 						std::cout << "[Auto] LEFT AUTO ERROR" << std::endl;
 						CommandBase::drivetrain->KillDrive();
-						break;
+						return;
 					}
 					case 0: {
 						std::cout << "[Auto] Starting LEFT SWITCH AUTO" << std::endl;
 						AutoLeftSwitch->Start();
-						break;
+						return;
 					}
 					case 1: {
 						std::cout << "[Auto] Starting LEFT SCALE AUTO" << std::endl;
 						AutoLeftScale->Start();
-						break;
+						return;
+					}
+					case 2: {
+						std::cout << "[Auto Default] AUTO DEFAULT IS STARTING!" << std::endl;
+						Default->Start();
+						return;
 					}
 				}
+				return;
 			}
 			case 1: {
 				switch (Priority) {
 					default: {
 						CommandBase::drivetrain->KillDrive();
-						break;
+						return;
 					}
 					case 0: {
-						break;
+						return;
 					}
 					case 1: {
-						break;
+						return;
 					}
 				}
+				return;
 			}
 			case 2: {
 				switch (Priority) {
@@ -189,19 +197,20 @@ public:
 						CommandBase::drivetrain->KillDrive();
 					}
 					case 0: {
-						break;
+						return;
 					}
 					case 1: {
-						break;
+						return;
 					}
 				}
+				return;
 			}
 			case 3: {
+				std::cout << "[Auto Default] AUTO DEFAULT IS STARTING!" << std::endl;
 				Default->Start();
-				break;
+				return;
 			}
 		}*/
-		Default->Start();
 	}
 
 	void AutonomousPeriodic() override {
@@ -209,11 +218,6 @@ public:
 	}
 
 	void TeleopInit() override {
-		/*TeleMode.release();
-		TeleMode.reset(TeleopChooser.GetSelected());
-		if (TeleMode != nullptr) {
-			TeleMode->Start();
-		}*/
 		Teleop->Start();
 	}
 
@@ -222,10 +226,13 @@ public:
 	}
 
 	void TestInit() override {
-
+		CommandBase::drivetrain->KillDrive();
+		return;
 	}
 
 	void TestPeriodic() override {
+		CommandBase::drivetrain->KillDrive();
+		return;
 	}
 
 };

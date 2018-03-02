@@ -101,11 +101,10 @@ bool DriveTrain::DriveInches(double inches, double speed) {
 
 bool DriveTrain::DriveInchesFast(double inches, double speed) {
 	double distance = GetEncoder();
-	double startPos = inches * .5;
-
+	double startPos = inches/2;
 	double err;
 	if (distance > startPos) {
-
+		err = fabs(((inches-startPos) - (distance-startPos))/(inches-startPos));
 	} else {
 		err = 1;
 	}

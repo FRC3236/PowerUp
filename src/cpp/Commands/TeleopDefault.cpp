@@ -25,7 +25,6 @@ void TeleopDefault::Execute() {
 
 	drivetrain->GetEncoder();
 	drivetrain->Drive(lateralSpeed - forwardSpeed, lateralSpeed + forwardSpeed);
-	double avg = ((lateralSpeed - forwardSpeed) + (lateralSpeed - forwardSpeed)) / 2;
 
 	//std::cout << "[elevator shtuff]" << elevator->Tray->GetOutputCurrent() << std::endl;
 
@@ -58,16 +57,7 @@ void TeleopDefault::Execute() {
 		cubegrabber->ToggleCompressor();
 	}
 
-	if (controls->OperatorStick->GetPOV() == 0) {
-		elevator->SetTray(-1);
-	} else if (controls->OperatorStick->GetPOV() == 180) {
-		elevator->SetTray(1);
-	} else {
-		elevator->SetTray(0);
-	}
-
 	frc::SmartDashboard::PutBoolean("COMPRESSOR", cubegrabber->GetCompressor());
-	frc::SmartDashboard::PutNumber("Error", avg);
 	frc::SmartDashboard::PutNumber("ELEVATOR ENCODER", elevator->GetEncoder());
 }
 
