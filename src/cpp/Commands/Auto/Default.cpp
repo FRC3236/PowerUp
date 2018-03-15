@@ -14,6 +14,9 @@ AutoDefault::AutoDefault() {
 void AutoDefault::Initialize() {
 	drivetrain->KillDrive();
     drivetrain->SetEncoder();
+	while (floor(drivetrain->GetEncoder()) != 0 ) {
+		drivetrain->SetEncoder();
+	}
 	Step = 1;
 }
 
@@ -27,7 +30,10 @@ void AutoDefault::Execute() {
 		case 1: {
 			cubegrabber->Retract();
 			cubegrabber->RetractArm();
-			if (drivetrain->DriveInchesFast(200, 1)) {
+			if (drivetrain->DriveInchesFast(120,0.7)) {
+				while (floor(drivetrain->GetEncoder()) != 0 ) {
+					drivetrain->SetEncoder();
+				}
 				Step = 2;
 			}
 			break;

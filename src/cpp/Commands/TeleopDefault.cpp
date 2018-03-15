@@ -30,9 +30,9 @@ void TeleopDefault::Execute() {
 
 	if (controls->OperatorStick->GetRawButton(1)) {
 		if (controls->OperatorStick->GetY() >= 0) {
-			elevator->Descend(controls->OperatorStick->GetY() /2);
+			elevator->Descend(controls->OperatorStick->GetY() *.8);
 		} else {
-			elevator->Ascend(controls->OperatorStick->GetY() /2);
+			elevator->Ascend(controls->OperatorStick->GetY() *.8);
 		}
 	} else {
 		elevator->SetMotor(0);
@@ -58,6 +58,7 @@ void TeleopDefault::Execute() {
 	}
 
 	frc::SmartDashboard::PutBoolean("COMPRESSOR", cubegrabber->GetCompressor());
+	frc::SmartDashboard::PutNumber("Text Display 1", drivetrain->GetEncoder());
 	frc::SmartDashboard::PutNumber("ELEVATOR ENCODER", elevator->GetEncoder());
 }
 

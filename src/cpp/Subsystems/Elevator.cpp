@@ -8,7 +8,7 @@
 #include <cmath>
 
 //8650 is the top of the elevator//
-double MaxHeight = 7800;
+double MaxHeight = 8200;
 double MaxHeightCapture = MaxHeight - 750;
 int count = 0;
 double avg = 0;
@@ -52,8 +52,8 @@ void Elevator::AscendTo(double speed, double pos) {
 	if (GetEncoder() > pos) {
 		sp = speed * ((pos - fabs(GetEncoder())) / pos)*10;
 	}
-	//std::cout << "[elevator a]" << sp << std::endl;
-	Motor->Set(-fabs(sp));
+	std::cout << "[elevator a]" << sp << std::endl;
+	Ascend(-fabs(sp));
 }
 
 void Elevator::Descend(double speed) {

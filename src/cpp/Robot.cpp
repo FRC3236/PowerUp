@@ -97,6 +97,7 @@ public:
 
 	void DisabledPeriodic() override {
 		SmartDashboard::PutNumber("Gyro", CommandBase::drivetrain->GetGyro());
+		SmartDashboard::PutNumber("ELEVATOR ENCODER", CommandBase::elevator->GetEncoder());
 	}
 
 	void AutonomousInit() override {
@@ -117,6 +118,7 @@ public:
 		 */
 
 		CommandBase::Field->SetInformation();
+		CommandBase::drivetrain->ResetGyro();
 
 		int StartPos = StartingPositionChooser.GetSelected();
 		int Priority = PriorityChooser.GetSelected();
@@ -145,72 +147,6 @@ public:
 				return;
 			}
 		}
-
-		/*switch (StartPos) {
-			default: {
-				CommandBase::drivetrain->KillDrive();
-				return;
-			}
-			case 0: {
-				switch (Priority) {
-					default: {
-						std::cout << "[Auto] LEFT AUTO ERROR" << std::endl;
-						CommandBase::drivetrain->KillDrive();
-						return;
-					}
-					case 0: {
-						std::cout << "[Auto] Starting LEFT SWITCH AUTO" << std::endl;
-						AutoLeftSwitch->Start();
-						return;
-					}
-					case 1: {
-						std::cout << "[Auto] Starting LEFT SCALE AUTO" << std::endl;
-						AutoLeftScale->Start();
-						return;
-					}
-					case 2: {
-						std::cout << "[Auto Default] AUTO DEFAULT IS STARTING!" << std::endl;
-						Default->Start();
-						return;
-					}
-				}
-				return;
-			}
-			case 1: {
-				switch (Priority) {
-					default: {
-						CommandBase::drivetrain->KillDrive();
-						return;
-					}
-					case 0: {
-						return;
-					}
-					case 1: {
-						return;
-					}
-				}
-				return;
-			}
-			case 2: {
-				switch (Priority) {
-					default: {
-						CommandBase::drivetrain->KillDrive();
-					}
-					case 0: {
-						return;
-					}
-					case 1: {
-						return;
-					}
-				}
-				return;
-			}
-			case 3: {
-				std::cout << "[Auto Default] AUTO DEFAULT IS STARTING!" << std::endl;
-				Default->Start();
-				return;
-			}
-		}*/
 	}
 
 	void AutonomousPeriodic() override {

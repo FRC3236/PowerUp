@@ -79,7 +79,7 @@ void DriveTrain::Turn(double speed) {
 bool DriveTrain::DriveInches(double inches, double speed) {
     double distance = GetEncoder();
 	double err = fabs((inches - distance) / inches);
-
+	std::cout << "[DriveInches] Dist:" << distance << " Dest:" << inches << std::endl;
 	if (err < 0.03) {
 		speed = 0;
 	}
@@ -88,9 +88,7 @@ bool DriveTrain::DriveInches(double inches, double speed) {
 		DriveStraight(fmax(speed * err, 0.25), RefAngle);
 		return (distance > inches);
 	} else {
-		std::cout << speed * err <<  std::endl;
 		Drive(fmax(-(fabs(speed) * err), -0.25));
-		std::cout << (distance > inches) << std::endl;
 		return (distance < inches);
 	}
 	//SmartDashboard::PutNumber("Error", distance);
@@ -209,16 +207,12 @@ bool DriveTrain::TurnToAngle(double target) {
 	double turn = 0.5;
 	if (target == 0) {
 		turn = 0.2;
-		error = fabs(target-current)*0.1;
+		error = fabs(target-current)*0.05;
 		speed = fmax(turn * error, 0.2);
-		std::cout << "[DriveTrain] " << speed << std::endl;
 	} else {
 		error = ((fabs(target) - fabs(current)) / fabs(target));
 		speed = fmax(turn * error, 0.4);
 	}
-	//std::cout << error << std::endl;
-
-	//std::cout << "[DriveTrain] " << target << " " << current << " " << error << std::endl;
 
 	if (target < current) {
 		Turn(-speed);

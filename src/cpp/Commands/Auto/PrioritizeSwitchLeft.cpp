@@ -25,7 +25,7 @@ void AutoPrioritizeSwitchLeft::Initialize() {
 }
 
 void AutoPrioritizeSwitchLeft::Execute() {
-	std::cout << "[Auto Switch Left]" <<  Step << std::endl;
+	std::cout << "[Auto Switch]" <<  Step << std::endl;
 	switch (Step) {
 		default: {
 			drivetrain->KillDrive();
@@ -33,14 +33,14 @@ void AutoPrioritizeSwitchLeft::Execute() {
 			break;
 		}
 		case 1: {
-			elevator->AscendTo(0.5, 1200);
+			elevator->GoToPosition(1200, 0.5);
 			if (drivetrain->DriveInches(180, 1)) {
 				Step = 2;
 			}
 			break;
 		}
 		case 2: {
-			elevator->AscendTo(0.5, 1200);
+			elevator->GoToPosition(1200, 0.5);
 			if (drivetrain->TurnToAngle(90)) {
 				while (floor(drivetrain->GetEncoder()) != 0 ) {
 					drivetrain->SetEncoder();
@@ -51,7 +51,7 @@ void AutoPrioritizeSwitchLeft::Execute() {
 			break;
 		}
 		case 3: {
-			elevator->AscendTo(0.5, 1200);
+			elevator->GoToPosition(1200, 0.5);
 			if (drivetrain->DriveInches(12, 0.5)) {
 				while (floor(drivetrain->GetEncoder()) != 0 ) {
 					drivetrain->SetEncoder();
@@ -62,7 +62,7 @@ void AutoPrioritizeSwitchLeft::Execute() {
 		}
 		case 4: {
 			cubegrabber->Extend();
-			elevator->AscendTo(0.5, 1200);
+			elevator->GoToPosition(1200, 0.5);
 			drivetrain->KillDrive();
 			break;
 		}
