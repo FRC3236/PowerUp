@@ -14,7 +14,7 @@ TeleopDefault::TeleopDefault() {
 // Called just before this Command runs the first time
 void TeleopDefault::Initialize() {
 	drivetrain->SetEncoder();
-
+	cubegrabber->StartCompressor();
 }
 
 // Called repeatedly when this Command is scheduled to run

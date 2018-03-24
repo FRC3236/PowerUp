@@ -7,20 +7,20 @@
 #include <iostream>
 #include <cmath>
 
-//8650 is the top of the elevator//
-double MaxHeight = 8200;
-double MaxHeightCapture = MaxHeight - 750;
+//8650 is the top of the elevator/
 int count = 0;
 double avg = 0;
 int stalled = -1; // 0 means stalled forward, 1 is stalled backwards
-
+double MaxHeight, MaxHeightCapture;
 Elevator::Elevator() : Subsystem("Elevator"){
 	MotorA = new WPI_TalonSRX(LIFTCAN);
 	MotorB = new WPI_TalonSRX(LIFTCAN2);
 	LiftQuadrature = new FeedbackDevice(QuadEncoder);
-	MotorA->ConfigSelectedFeedbackSensor(*LiftQuadrature, 0, 0);
+	MotorB->ConfigSelectedFeedbackSensor(*LiftQuadrature, 0, 0);
 	SetEncoder();
 	SetName("Elevator");
+	MaxHeight = GetMaxHeight();
+	MaxHeightCapture = GetMaxHeight() * .75;
 }
 
 void Elevator::Initialize(){
@@ -29,8 +29,16 @@ void Elevator::Initialize(){
 }
 
 void Elevator::SetEncoder() {
-	MotorA->SetSelectedSensorPosition(0,0,0);
+	MotorB->SetSelectedSensorPosition(0,0,0);
 	std::cout << "[Elevator] Set encoder to 0!" << std::endl;
+}
+
+double Elevator::GetMaxHeight() {
+	return 4750;
+}
+
+double Elevator::GetSwitchHeight() {
+	return 2100;
 }
 
 void Elevator::SetMotor(double speed) {
@@ -41,8 +49,9 @@ void Elevator::SetMotor(double speed) {
 void Elevator::Ascend(double speed) {
 	double sp = speed;
 	if (GetEncoder() > MaxHeightCapture) {
-		sp = speed * ((MaxHeight - fabs(GetEncoder())) / MaxHeight)*10;
+		sp = speed * (((MaxHeight - MaxHeightCapture) - (GetEncoder() - MaxHeightCapture)) / (MaxHeight - MaxHeightCapture));
 	}
+	std::cout << "MOVING ELEVATOR UP AT " << sp << std::endl;
 	MotorA->Set(-fabs(sp));
 	MotorB->Set(fabs(sp));
 }
@@ -51,7 +60,7 @@ void Elevator::AscendTo(double speed, double pos) {
 	double sp = speed;
 	pos = fmin(pos, MaxHeightCapture);
 	if (GetEncoder() > pos) {
-		sp = speed * ((pos - fabs(GetEncoder())) / pos)*10;
+		sp = fmin(speed * ((pos - fabs(GetEncoder())) / pos)*10, speed);
 	}
 	std::cout << "[elevator a]" << sp << std::endl;
 	Ascend(-fabs(sp));
@@ -68,7 +77,7 @@ void Elevator::Descend(double speed) {
 }
 
 double Elevator::GetEncoder() {
-	return MotorA->GetSelectedSensorPosition(0);
+	return fabs(MotorB->GetSelectedSensorPosition(0));
 }
 
 bool Elevator::GoToPosition(double targetPos) {
@@ -77,6 +86,7 @@ bool Elevator::GoToPosition(double targetPos) {
 
 bool Elevator::GoToPosition(double targetPos, double speed) {
 	double currentPos = GetEncoder();
+	std::cout << "ELEVATOR GOTOPOS " << targetPos << " " << GetEncoder() << std::endl;
 	bool backwards = false;
 	if (currentPos > targetPos) {
 		double tempPos = targetPos;
@@ -85,12 +95,12 @@ bool Elevator::GoToPosition(double targetPos, double speed) {
 		backwards = true;
 	}
 	double err = (fabs(targetPos - currentPos)) / targetPos;
-	std::cout << "[Elevator GoToPosition] Backwards: " << backwards << " | " << err << std::endl;
-	if (err < 0.05) {
+	std::cout << "ELEVATOR GOTOPOS " <<  speed << " " << err << " " << speed * err << std::endl;
+	if (err > 0.05) {
 		if (backwards) {
-			Descend(speed * err);
+			Descend(speed);
 		} else {
-			Ascend(speed * err);
+			Ascend(speed);
 		}
 		return false;
 	} else {

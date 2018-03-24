@@ -63,8 +63,8 @@ public:
         Scheduler::GetInstance()->ResetAll();
         Scheduler::GetInstance()->RemoveAll();
 
-		PriorityChooser.AddDefault("SWITCH", 0);
-		PriorityChooser.AddObject("SCALE", 1);
+		PriorityChooser.AddDefault("SCALE", 1);
+		PriorityChooser.AddObject("SWITCH", 0);
 		PriorityChooser.AddObject("DEFAULT", 2);
 		PriorityChooser.AddObject("DEFER SCALE", 3);
 		PriorityChooser.AddObject("DEFER SCALE [NO RIGHT SWITCH]", 4);
@@ -85,7 +85,7 @@ public:
 			matchType = "Unknown";
 		}*/
 		matchType = to_string(DriverStation::GetInstance().GetMatchType());
-		SmartDashboard::PutString("MATCH INFORMATION", matchType + to_string(DriverStation::GetInstance().GetMatchNumber()));
+		SmartDashboard::PutString("MATCH INFORMATION", /*matchType*/ + "Qualifier " + to_string(DriverStation::GetInstance().GetMatchNumber()));
 
         SmartDashboard::PutNumber("GYRO", 0);
 
@@ -145,6 +145,7 @@ public:
 	}
 
 	void AutonomousPeriodic() override {
+		SmartDashboard::PutNumber("GYRO", CommandBase::drivetrain->GetGyro());
 		Scheduler::GetInstance()->Run();
 	}
 

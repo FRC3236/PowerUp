@@ -18,7 +18,6 @@ DriveTrain::DriveTrain() : Subsystem("DriveTrain") {
 	RightSideB = new WPI_TalonSRX(RIGHTCANBASIC);
 
 	LeftSideQuadrature = new FeedbackDevice(QuadEncoder);
-	RightSideQuadrature = new FeedbackDevice(QuadEncoder);
 
 	LeftSwitch = new DigitalInput(0);
 	RightSwitch = new DigitalInput(1);
@@ -29,7 +28,6 @@ DriveTrain::DriveTrain() : Subsystem("DriveTrain") {
 	RefAngle = Gyro->GetAngle();
 
 	LeftSideA->ConfigSelectedFeedbackSensor(*LeftSideQuadrature, 0, 0);
-	RightSideA->ConfigSelectedFeedbackSensor(*RightSideQuadrature, 0, 0);
 	SetEncoder();
 
 	SetName("DriveTrain");
@@ -155,9 +153,9 @@ void DriveTrain::DriveStraight(double speed, double refAngle) {
 	if (fabs(error) > marginOfError) {
 		if (currentAngle > refAngle) {
 			std::cout << "[DriveTrain DS] " << correction << ", " << -(fabs(speed)) << std::endl;
-			Drive(correction, -(fabs(speed)));
+			Drive(fmax(correction,0.1), -fmax((fabs(speed)),0.1));
 		} else {
-			Drive(speed, -(fabs(correction)));
+			Drive(fmax(speed,0.1), -fmax((fabs(correction)),0.1));
 			std::cout << "[DriveTrain DS] " << -(fabs(correction)) << ", " << speed << std::endl;
 		}
 	} else {

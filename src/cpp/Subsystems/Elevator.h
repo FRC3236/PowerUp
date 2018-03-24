@@ -17,6 +17,8 @@ private:
 public:
 	WPI_TalonSRX * MotorA, * MotorB, * Tray;
 	Elevator();
+	double GetMaxHeight();
+	double GetSwitchHeight();
 	void SetEncoder();
 	double GetEncoder();
 	bool GoToPosition(double);

@@ -6,6 +6,7 @@
 
 using namespace std;
 
+
 AutoDefault::AutoDefault() {
 	Requires(drivetrain);
 	Requires(cubegrabber);
@@ -28,6 +29,7 @@ void AutoDefault::Execute() {
 			End();
 		}
 		case 1: {
+			elevator->GoToPosition(elevator->GetMaxHeight(), 0.6);
 			cubegrabber->Retract();
 			cubegrabber->RetractArm();
 			if (drivetrain->DriveInchesFast(120,0.7)) {
@@ -38,6 +40,7 @@ void AutoDefault::Execute() {
 		}
 		case 2: {
 			drivetrain->KillDrive();
+			elevator->GoToPosition(elevator->GetMaxHeight(), 0.7);
 			break;
 		}
 	}

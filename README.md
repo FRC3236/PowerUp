@@ -2,6 +2,14 @@
 
 This file replaces the old "how to set up your system" page that wasn't useful or completely accurate. Thanks, Eric. `-.-`
 
+## March 24, 2018
+**REV 2 : Updated at 7:35am @ the hotel**  
+*CHANGES SINCE `REV 1` HAVE NOT BEEN TESTED!*
+### Changes / Additions
++ *None as of yet*
+### Removals
++ `RightSideQuadrature` and other encoder information for the right half of the drive train, since we need it for the elevator.
+
 ## March 23, 2018
 **REV 1 : Updated at 9:01pm @ Bryant University**  
 *THESE CHANGES HAVE NOT BEEN TESTED YET!*
