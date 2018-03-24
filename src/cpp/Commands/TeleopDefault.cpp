@@ -56,9 +56,8 @@ void TeleopDefault::Execute() {
 	if (controls->OperatorStick->GetRawButtonPressed(11)) {
 		cubegrabber->ToggleCompressor();
 	}
-
 	frc::SmartDashboard::PutBoolean("COMPRESSOR", cubegrabber->GetCompressor());
-	frc::SmartDashboard::PutNumber("Text Display 1", drivetrain->GetEncoder());
+	frc::SmartDashboard::PutNumber("TIME LEFT", DriverStation::GetInstance().GetMatchTime());
 	frc::SmartDashboard::PutNumber("ELEVATOR ENCODER", elevator->GetEncoder());
 }
 

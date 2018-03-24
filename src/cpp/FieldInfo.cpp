@@ -8,8 +8,9 @@
 using namespace std;
 
 FieldInfo::FieldInfo() {
-	int Switch = 0;
-	int Scale = 0;
+	Switch = 0;
+	Scale = 0;
+	FieldTime = new Timer();
 }
 
 void FieldInfo::SetInformation(int sw, int scale) {

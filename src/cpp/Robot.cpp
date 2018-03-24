@@ -28,16 +28,12 @@
 #include "CommandBase.h"
 #include "Commands/TeleopDefault.h"
 #include "Commands/Auto/Default.h"
-#include "Commands/DoNothing.h"
-#include "Commands/ResetGyro.h"
-#include "Commands/ResetEncoders.h"
 #include "Commands/Auto/PrioritizeSwitchLeft.h"
-#include "Commands/Auto/PrioritizeSwitchRight.h"
 #include "Commands/Auto/PrioritizeScaleLeft.h"
-#include "Commands/Auto/PrioritizeScaleRight.h"
+#include "Commands/Auto/DeferScaleRight.h"
+#include "Commands/Auto/DeferScaleRightNoSwitch.h"
 #include <iostream>
 #include <opencv2/core/core.hpp>
-#include <opencv2/imgproc/imgproc.hpp>
 
 
 using namespace frc;
@@ -45,11 +41,10 @@ using namespace std;
 
 class Robot : public TimedRobot {
 private:
-	SendableChooser<int> StartingPositionChooser;
 	SendableChooser<int> PriorityChooser;
 
 	Command * Teleop = new TeleopDefault();
-	Command * DashResetGyro, * DashResetEncoders, * AutoLeftSwitch, * AutoLeftScale, * Default;
+	Command * DeferScale, *DeferScaleNoSwitch, * AutoLeftSwitch, * AutoLeftScale, * Default;
 
 public:
 	void RobotInit() override {
@@ -60,35 +55,39 @@ public:
 		AutoLeftSwitch = new AutoPrioritizeSwitchLeft();
 		AutoLeftScale = new AutoPrioritizeScaleLeft();
 		Default = new AutoDefault();
-		DashResetGyro = new ResetGyro();
-		DashResetEncoders = new ResetEncoders();
+		DeferScale = new DeferScaleRight();
+		DeferScaleNoSwitch = new DeferScaleRightNoSwitch();
 	}
 
 	void DisabledInit() override {
         Scheduler::GetInstance()->ResetAll();
         Scheduler::GetInstance()->RemoveAll();
 
-		StartingPositionChooser.AddDefault("LEFT", 0);
-		StartingPositionChooser.AddObject("CENTER [DONT CHOOSE ME]", 1);
-		StartingPositionChooser.AddObject("RIGHT [DONT CHOOSE ME]", 2);
-		StartingPositionChooser.AddObject("EMERGENCY DEFAULT", 3);
-
 		PriorityChooser.AddDefault("SWITCH", 0);
 		PriorityChooser.AddObject("SCALE", 1);
 		PriorityChooser.AddObject("DEFAULT", 2);
+		PriorityChooser.AddObject("DEFER SCALE", 3);
+		PriorityChooser.AddObject("DEFER SCALE [NO RIGHT SWITCH]", 4);
+
 		CommandBase::drivetrain->ResetGyro();
 		CommandBase::drivetrain->SetRefAngle(CommandBase::drivetrain->GetGyro());
 
-		SmartDashboard::PutData("Starting Position", &StartingPositionChooser);
 		SmartDashboard::PutData("Auto Priority", &PriorityChooser);
 		// Place a bunch of text displays for use or whatever //
+		SmartDashboard::PutNumber("TIME LEFT", DriverStation::GetInstance().GetMatchTime());
+		std::string matchType;
+		/*DriverStation::MatchType t = DriverStation::GetInstance().GetMatchType();
+		if (t == DriverStation::MatchType::kQualification) {
+			matchType = "Qualification";
+		} else if (t == DriverStation::MatchType::kElimination) {
+			matchType = "Eliminator";
+		} else {
+			matchType = "Unknown";
+		}*/
+		matchType = to_string(DriverStation::GetInstance().GetMatchType());
+		SmartDashboard::PutString("MATCH INFORMATION", matchType + to_string(DriverStation::GetInstance().GetMatchNumber()));
 
-        SmartDashboard::PutNumber("Gyro", 0);
-		SmartDashboard::PutNumber("Error", 0);
-
-		SmartDashboard::PutString("Field Layout", "Unknown");
-		SmartDashboard::PutData("Reset Gyro", DashResetGyro);
-		SmartDashboard::PutData("Reset Encoders", DashResetEncoders);
+        SmartDashboard::PutNumber("GYRO", 0);
 
 		SmartDashboard::PutBoolean("COMPRESSOR", true);
 
@@ -96,7 +95,7 @@ public:
 	}
 
 	void DisabledPeriodic() override {
-		SmartDashboard::PutNumber("Gyro", CommandBase::drivetrain->GetGyro());
+		SmartDashboard::PutNumber("GYRO", CommandBase::drivetrain->GetGyro());
 		SmartDashboard::PutNumber("ELEVATOR ENCODER", CommandBase::elevator->GetEncoder());
 	}
 
@@ -105,24 +104,10 @@ public:
 		Scheduler::GetInstance()->ResetAll();
 		Scheduler::GetInstance()->RemoveAll();
 
-		/*
-		 * StartPos Cases:
-		 * 		0: Left
-		 * 		1: Center
-		 * 		2: Right
-		 * 		3: Emergency Default
-		 *
-		 * Priority Cases:
-		 * 		0: Switch
-		 * 		1: Scale
-		 */
-
 		CommandBase::Field->SetInformation();
 		CommandBase::drivetrain->ResetGyro();
 
-		int StartPos = StartingPositionChooser.GetSelected();
 		int Priority = PriorityChooser.GetSelected();
-		std::cout << "[Robot.cpp] Start Pos: " << StartPos << std::endl;
 		std::cout << "[Robot.cpp] Priority: " << Priority << std::endl;
 
 		switch (Priority) {
@@ -132,7 +117,7 @@ public:
 				return;
 			}
 			case 0: {
-				std::cout << "[Auto] Starting LEFT SWITCH AUTO" << std::endl;
+				std::cout << "[Auto] Starting CENTER SWITCH AUTO" << std::endl;
 				AutoLeftSwitch->Start();
 				return;
 			}
@@ -144,6 +129,16 @@ public:
 			case 2: {
 				std::cout << "[Auto] Starting DEFAULT AUTO" << std::endl;
 				Default->Start();
+				return;
+			}
+			case 3: {
+				std::cout << "[Auto] Starting LEFT SCALE DEFERMENT AUTO" << std::endl;
+				DeferScale->Start();
+				return;
+			}
+			case 4: {
+				std::cout << "[Auto] Starting LEFT SCALE DEFERMENT AUTO WITH NO SWITCH" << std::endl;
+				DeferScaleNoSwitch->Start();
 				return;
 			}
 		}

@@ -5,11 +5,12 @@
 #ifndef NEWPOWERUP_FIELDINFO_H
 #define NEWPOWERUP_FIELDINFO_H
 #include <utility>
+#include "WPILib.h"
 
 class FieldInfo {
 private:
 	int Switch, Scale;
-
+	Timer * FieldTime;
 public:
 	FieldInfo();
 	void SetInformation(int,int);

@@ -15,26 +15,27 @@ double avg = 0;
 int stalled = -1; // 0 means stalled forward, 1 is stalled backwards
 
 Elevator::Elevator() : Subsystem("Elevator"){
-	Motor = new WPI_TalonSRX(LIFTCAN);
-	Tray = new WPI_TalonSRX(TRAYCAN);
+	MotorA = new WPI_TalonSRX(LIFTCAN);
+	MotorB = new WPI_TalonSRX(LIFTCAN2);
 	LiftQuadrature = new FeedbackDevice(QuadEncoder);
-	Motor->ConfigSelectedFeedbackSensor(*LiftQuadrature, 0, 0);
+	MotorA->ConfigSelectedFeedbackSensor(*LiftQuadrature, 0, 0);
 	SetEncoder();
 	SetName("Elevator");
 }
 
 void Elevator::Initialize(){
-	Motor->Set(0);
-	Tray->Set(0);
+	MotorA->Set(0);
+	MotorB->Set(0);
 }
 
 void Elevator::SetEncoder() {
-	Motor->SetSelectedSensorPosition(0,0,0);
+	MotorA->SetSelectedSensorPosition(0,0,0);
 	std::cout << "[Elevator] Set encoder to 0!" << std::endl;
 }
 
 void Elevator::SetMotor(double speed) {
-	Motor->Set(speed);
+	MotorA->Set(speed);
+	MotorB->Set(speed);
 }
 
 void Elevator::Ascend(double speed) {
@@ -42,8 +43,8 @@ void Elevator::Ascend(double speed) {
 	if (GetEncoder() > MaxHeightCapture) {
 		sp = speed * ((MaxHeight - fabs(GetEncoder())) / MaxHeight)*10;
 	}
-	//std::cout << "[elevator a]" << sp << std::endl;
-	Motor->Set(-fabs(sp));
+	MotorA->Set(-fabs(sp));
+	MotorB->Set(fabs(sp));
 }
 
 void Elevator::AscendTo(double speed, double pos) {
@@ -62,11 +63,12 @@ void Elevator::Descend(double speed) {
 		sp = speed*(fabs(GetEncoder())/1000);
 	}
 	//std::cout << "[elevator d]" << sp << std::endl;
-	Motor->Set(fabs(speed));
+	MotorA->Set(fabs(speed));
+	MotorB->Set(-fabs(speed));
 }
 
 double Elevator::GetEncoder() {
-	return Motor->GetSelectedSensorPosition(0);
+	return MotorA->GetSelectedSensorPosition(0);
 }
 
 bool Elevator::GoToPosition(double targetPos) {
@@ -75,54 +77,23 @@ bool Elevator::GoToPosition(double targetPos) {
 
 bool Elevator::GoToPosition(double targetPos, double speed) {
 	double currentPos = GetEncoder();
-	double marginOfError = 100;
-	if (fabs(currentPos - targetPos) > marginOfError) {
-		if (currentPos < targetPos) {
-			Ascend(speed);
+	bool backwards = false;
+	if (currentPos > targetPos) {
+		double tempPos = targetPos;
+		targetPos = currentPos;
+		currentPos = tempPos;
+		backwards = true;
+	}
+	double err = (fabs(targetPos - currentPos)) / targetPos;
+	std::cout << "[Elevator GoToPosition] Backwards: " << backwards << " | " << err << std::endl;
+	if (err < 0.05) {
+		if (backwards) {
+			Descend(speed * err);
 		} else {
-			Descend(speed);
+			Ascend(speed * err);
 		}
 		return false;
 	} else {
 		return true;
 	}
-}
-
-
-
-bool Elevator::DeadZone() {
-	bool DeadBool = (GetEncoder() >= 7000 && Motor->Get() < 0) || (GetEncoder() <= 0 && Motor->Get() > 0);
-	return DeadBool;
-}
-
-void Elevator::SetTray(double speed) {
-	double avglimit = 5;
-	//std::cout << "[elevator SetTray - output]" << Tray->GetOutputCurrent() << " " << (Tray->GetOutputCurrent() < 2 && Tray->GetOutputCurrent() > 0.3) << std::endl;
-	if (Tray->GetOutputCurrent() < 0.5) {
-		count++;
-		avg += Tray->GetOutputCurrent();
-
-		if (count == avglimit) {
-			avg = avg/avglimit;
-			//std::cout << "[elevator SetTray - avg]" << avg << std::endl;
-			if (avg > 0.6 && avg < 1) {
-				stalled = (speed < 0);
-				speed = 0;
-			}
-			avg = 0;
-			count = 0;
-		}
-	} else {
-		stalled = -1;
-	}
-	if ((stalled == 0 && speed > 0) || (stalled == 1 && speed < 0)) { speed = 0; std::cout << "Stalled" << std::endl; }
-	Tray->Set(speed);
-}
-
-void Elevator::ExtendTray() {
-
-}
-
-void Elevator::RetractTray() {
-
 }

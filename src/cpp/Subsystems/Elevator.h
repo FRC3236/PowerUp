@@ -15,7 +15,7 @@ private:
 
 	FeedbackDevice * LiftQuadrature;
 public:
-	WPI_TalonSRX * Motor, * Tray;
+	WPI_TalonSRX * MotorA, * MotorB, * Tray;
 	Elevator();
 	void SetEncoder();
 	double GetEncoder();
@@ -26,11 +26,8 @@ public:
 	void Descend(double);
 	void SetMotor(double);
 	void Initialize();
-	void GoToSwitch();
 	bool DeadZone();
 	void SetTray(double);
-	void ExtendTray();
-	void RetractTray();
 };
 
 

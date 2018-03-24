@@ -130,13 +130,13 @@ double DriveTrain::GetGyro() {
 }
 
 void DriveTrain::SetEncoder() {
-    LeftSideA->SetSelectedSensorPosition(0, 0, 0);
-	RightSideA->SetSelectedSensorPosition(0, 0, 0);
+	while (GetEncoder() != 0) {
+		LeftSideA->SetSelectedSensorPosition(0, 0, 0);
+		RightSideA->SetSelectedSensorPosition(0, 0, 0);
+	}
 }
 
 double DriveTrain::GetEncoder() {
-	SmartDashboard::PutNumber("Text Display 1", (LeftSideA->GetSelectedSensorPosition(0) / 1440.0 * 6.0 * M_PI));
-	SmartDashboard::PutNumber("Text Display 2", (LeftSideA->GetSelectedSensorPosition(0) / 1440.0 * 6.0 * M_PI));
 	return LeftSideA->GetSelectedSensorPosition(0) / 1440.0 * 6.0 * M_PI; // was left side but i just switched it
 }
 
@@ -188,8 +188,8 @@ bool DriveTrain::TurnAngle(double angle) {
 		Turn(0);
 	}
 
-	SmartDashboard::PutNumber("Gyro", current);
-	SmartDashboard::PutNumber("Error", error);
+	SmartDashboard::PutNumber("GYRO", current);
+	//SmartDashboard::PutNumber("Error", error);
 	SmartDashboard::PutNumber("Drive Encoder", this->GetEncoder());
 
 	if (fabs(targetAngle) - fabs(current) < 4) {

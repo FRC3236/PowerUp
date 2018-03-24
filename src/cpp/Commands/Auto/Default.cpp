@@ -31,9 +31,7 @@ void AutoDefault::Execute() {
 			cubegrabber->Retract();
 			cubegrabber->RetractArm();
 			if (drivetrain->DriveInchesFast(120,0.7)) {
-				while (floor(drivetrain->GetEncoder()) != 0 ) {
-					drivetrain->SetEncoder();
-				}
+				drivetrain->SetEncoder();
 				Step = 2;
 			}
 			break;

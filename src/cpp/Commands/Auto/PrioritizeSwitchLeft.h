@@ -19,7 +19,7 @@ public:
 	void Interrupted() override;
 
 
-	Timer * AutoTimer();
+	Timer * AutoTimer;
 	PID * pid;
 	int Step;
 };

@@ -25,6 +25,7 @@ void AutoPrioritizeScaleLeft::Initialize() {
 
 	std::cout << "AUTO: " << Step << std::endl;
 	cubegrabber->Retract();
+	cubegrabber->RetractArm();
 }
 
 void AutoPrioritizeScaleLeft::Execute() {
@@ -33,9 +34,12 @@ void AutoPrioritizeScaleLeft::Execute() {
 		default: {
 			std::cout << "[Auto Scale] Auto failed! We were on step " << Step << std::endl;
 			drivetrain->KillDrive();
+			Step = -1;
 			End();
 			break;
 		}
+
+		//Scale is on the left//
 		case 1: {
 			elevator->GoToPosition(8100, 0.5);
 			if (drivetrain->DriveInches(228, 0.65)) {
@@ -46,18 +50,14 @@ void AutoPrioritizeScaleLeft::Execute() {
 		case 2: {
 			elevator->GoToPosition(8100, 0.5);
 			if (drivetrain->TurnToAngle(90, 0.7)) {
-				while (floor(drivetrain->GetEncoder()) != 0 ) {
-					drivetrain->SetEncoder();
-				}
+				drivetrain->SetEncoder();
 				Step = 3;
 			}
 			break;
 		}
 		case 3: {
 			if (drivetrain->DriveInches(12, 0.5)) {
-				while (floor(drivetrain->GetEncoder()) != 0 ) {
-					drivetrain->SetEncoder();
-				}
+				drivetrain->SetEncoder();
 				Step = 4;
 				AutoTimer->Reset();
 				AutoTimer->Start();
@@ -150,7 +150,7 @@ void AutoPrioritizeScaleLeft::Execute() {
 			break;r4
 		}*/
 
-
+		//Scale is on the right//
 		case 101: {
 			if (drivetrain->DriveInchesFast(195, 1)) {
 				Step = 102;
@@ -160,18 +160,14 @@ void AutoPrioritizeScaleLeft::Execute() {
 		case 102: {
 			if (drivetrain->TurnToAngle(90)) {
 				Step = 103;
-				while (floor(drivetrain->GetEncoder()) != 0 ) {
-					drivetrain->SetEncoder();
-				}
+				drivetrain->SetEncoder();
 				drivetrain->SetRefAngle(90);
 			}
 			break;
 		}
 		case 103: {
 			if (drivetrain->DriveInchesFast(203, 1)) {
-				while (floor(drivetrain->GetEncoder()) != 0 ) {
-					drivetrain->SetEncoder();
-				}
+				drivetrain->SetEncoder();
 
 				Step = 104;
 			}
@@ -180,11 +176,7 @@ void AutoPrioritizeScaleLeft::Execute() {
 		case 104: {
 			elevator->GoToPosition(8200, 0.5);
 			if (drivetrain->TurnToAngle(0)) {
-				drivetrain->SetRefAngle(0);
-				while (floor(drivetrain->GetEncoder()) != 0 ) {
-					drivetrain->SetEncoder();
-				}
-
+				drivetrain->SetRefAngle(0);drivetrain->SetEncoder();
 				Step = 105;
 			}
 			break;
@@ -201,9 +193,7 @@ void AutoPrioritizeScaleLeft::Execute() {
 			elevator->GoToPosition(8200, 0.5);
 			if (drivetrain->TurnToAngle(-75, 0.2)) {
 				drivetrain->SetRefAngle(-75);
-				while (floor(drivetrain->GetEncoder()) != 0 ) {
-					drivetrain->SetEncoder();
-				}
+				drivetrain->SetEncoder();
 				Step = 107;
 			}
 			break;
@@ -211,9 +201,7 @@ void AutoPrioritizeScaleLeft::Execute() {
 		case 107: {
 			elevator->GoToPosition(8200, 0.5);
 			if (drivetrain->DriveInches(26, 0.5)) {
-				while (floor(drivetrain->GetEncoder()) != 0 ) {
-					drivetrain->SetEncoder();
-				}
+				drivetrain->SetEncoder();
 				Step = 108;
 			}
 			break;

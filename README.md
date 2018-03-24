@@ -1,43 +1,34 @@
-# TRIFORCE 3236 - FIRST PowerUp
+# Changelog
 
-## Code Setup Instructions
+This file replaces the old "how to set up your system" page that wasn't useful or completely accurate. Thanks, Eric. `-.-`
 
-Before you do anything, you need GradleRIO. You can download it [here](https://github.com/Open-RIO/GradleRIO).
+## March 23, 2018
+**REV 1 : Updated at 9:01pm @ Bryant University**  
+*THESE CHANGES HAVE NOT BEEN TESTED YET!*
 
-Project files are stored within the `src/cpp` folder. GradleRIO automatically makes an `src/include` folder for header files, but for our purposes we will not be putting header files in this folder.
+### Changes / Additions
++ Deferment Autos
+	+ Used for when the bot starting in the right position  has a consistent right-side auto. 
+	+ Two autonomous modes: `DeferScaleRight` and `DefereScaleRightNoSwitch`
+	+ Both autos examine the field locations at initialization. If the scale is on the left, the auto runs the default left-scale auto. If the scale is on the right, the auto examines which orientation the switch is in. If on the left, the auto will place the cube in the switch. If on the right, `DeferScaleRight` will attempt to place the cube in the right side, while `DeferScaleRightNoSwitch` will not.
++ New Shuffleboard Stuff
+	+ `MATCH INFO`
+		+ Shows `MatchType` and `MatchNumber` from the DriverStation
+		+ Mostly for when examining logs and match performance, a visual cue as to which match the bot was on is recrded
+	+ `TIME LEFT`
+		+ Displays the approximate time left in the match (straight from `DriveTrain::GetInstance().GetMatchTime()`).
+		+ May use this number in the future to toggle a bool-box on the dashboard to indicate time to climb.
+	+ Renamed `Gyro` to `GYRO` to match other field-information case scheme.
++ Made `Elevator::GoToPosition()` *(hopefully)* scale speeds to locations other than the very top of the elevator - useful for switch auto.
++ Made `drivetrain->SetEncoder()` perform the while loop to reset the encoders, rather than have every use of the function wrapped in a while loop.
++ Added new motor to `Elevator`
+	+ Renamed `Motor` to `MotorA` - added `MotorB`
+	+ Removed `TRAYCAN` macro and added `LIFTCAN2` macro to RobotMap.h
++ Fixed a mistake in `FieldInfo` regarding local `int`s in the initialize function.
 
-It is recommended that you run all gradle commands in a command line that has administrator priviledges.
-
-Make sure that you have installed the [C++ toolchain](http://first.wpi.edu/FRC/roborio/toolchains/), and [CTRE's Talon libraries](http://www.ctr-electronics.com/control-system/hro.html#product_tabs_technical_resources). If you do not have the WPILib includes, they can be found [here](https://drive.google.com/open?id=1a1DE70waDcB87WumJfISnJyxQFEDP31x). Extract them to somewhere you'll remember.
-
-### Eclipse
-1. Clone repository into desired directory.
-2. Open a command prompt and navigate to this new directory. Run `gradlew.bat installToolchain`. You may need to do this as an administrator.
-3. In Eclipse, import the project from the root directory (i.e, if you cloned into `FRC2018`, import the project from `FRC2018`.)
-4. Follow the [WPILib Screensteps article](http://wpilib.screenstepslive.com/s/currentCS/m/cpp/l/145002-installing-eclipse-c-java) about installing WPILib into Eclipse.  
-**Do not run a build by right clicking the project and clicking WPILib Deploy, like in previous years. GradleRIO is meant to move the build process away from the IDE.**
-
-### CLion
-1. Clone repository into desired directory.
-2. Open a command prompt and navigate to this new directory. Run `gradlew.bat installToolchain`. You may need to do this as an administrator.
-3. Run `gradlew.bat clion`
-4. In CLion, import the project from the root directory (i.e, if you cloned into `FRC2018`, import the project from `FRC2018`.)
-5. CLion uses a file called `CMakeLists.txt` to understand where includes and headers are. Add the following lines:
-```
-set(INCLUDE_DIRECTORIES
-	<path/to/wpilib/includes>
-	<path/to/ctre/phoenix>)
-```
-Replace `<path/to/wpilib/includes>` and `<path/to/ctre/phoenix>` with the correct paths. For example, my paths are `C:/Users/Eric/wpilib/cpp/current/include` for WPILib and `C:/Users/Eric/wpilib/user/cpp/include` for CTRE Phoenix.
-Then, towards the bottom of `CMakeLists.txt`, add:
-```
-include_directories(${INCLUDE_DIRECTORIES})
-```
-As an example, this is what my CMakeLists.txt looks like:
-![CMakeListExample](https://i.imgur.com/yb2w9dh.png)
-
-## Building Code
-Once you have written a section of code that you would like to validate, run `gradlew.bat build`. This will build the code and show you where any errors are apparent. This does **not** upload the code to the robot.
-
-## Deploying Code
-Once you have validated the code to be functional, run `gradlew.bat deploy`. This will deploy your code to the robot.
+### Removals
++ `Error`, `StartingPositionChooser` and CommandButtons from Shuffleboard
+	+ Also removed corresponding Commands from Robot.cpp but not from the project (just in case)
++ Unused headers from Robot.cpp
++ Lots of commented-out code that will not be used
++ Removed lots of unnecessary `SmartDashboard::Put` calls
