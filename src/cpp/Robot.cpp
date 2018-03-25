@@ -67,7 +67,7 @@ public:
 		PriorityChooser.AddObject("SWITCH", 0);
 		PriorityChooser.AddObject("DEFAULT", 2);
 		PriorityChooser.AddObject("DEFER SCALE", 3);
-		PriorityChooser.AddObject("DEFER SCALE [NO RIGHT SWITCH]", 4);
+		PriorityChooser.AddObject("DEFER SCALE NS", 4);
 
 		CommandBase::drivetrain->ResetGyro();
 		CommandBase::drivetrain->SetRefAngle(CommandBase::drivetrain->GetGyro());
@@ -75,6 +75,7 @@ public:
 		SmartDashboard::PutData("Auto Priority", &PriorityChooser);
 		// Place a bunch of text displays for use or whatever //
 		SmartDashboard::PutNumber("TIME LEFT", DriverStation::GetInstance().GetMatchTime());
+		SmartDashboard::PutNumber("VOLTAGE", DriverStation::GetInstance().GetBatteryVoltage());
 		std::string matchType;
 		/*DriverStation::MatchType t = DriverStation::GetInstance().GetMatchType();
 		if (t == DriverStation::MatchType::kQualification) {
@@ -85,7 +86,7 @@ public:
 			matchType = "Unknown";
 		}*/
 		matchType = to_string(DriverStation::GetInstance().GetMatchType());
-		SmartDashboard::PutString("MATCH INFORMATION", /*matchType*/ + "Qualifier " + to_string(DriverStation::GetInstance().GetMatchNumber()));
+		SmartDashboard::PutString("MATCH INFORMATION", /*matchType*/ + "Playoff " + to_string(DriverStation::GetInstance().GetMatchNumber()));
 
         SmartDashboard::PutNumber("GYRO", 0);
 
@@ -146,6 +147,9 @@ public:
 
 	void AutonomousPeriodic() override {
 		SmartDashboard::PutNumber("GYRO", CommandBase::drivetrain->GetGyro());
+		SmartDashboard::PutNumber("VOLTAGE", DriverStation::GetInstance().GetBatteryVoltage());
+		SmartDashboard::PutNumber("ELEVATOR ENCODER", CommandBase::elevator->GetEncoder());
+
 		Scheduler::GetInstance()->Run();
 	}
 
@@ -154,6 +158,8 @@ public:
 	}
 
 	void TeleopPeriodic() override {
+		SmartDashboard::PutNumber("VOLTAGE", DriverStation::GetInstance().GetBatteryVoltage());
+
 		Scheduler::GetInstance()->Run();
 	}
 
