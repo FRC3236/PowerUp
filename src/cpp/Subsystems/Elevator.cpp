@@ -34,7 +34,7 @@ void Elevator::SetEncoder() {
 }
 
 double Elevator::GetMaxHeight() {
-	return 4750;
+	return 4825;
 }
 
 double Elevator::GetSwitchHeight() {
@@ -76,6 +76,16 @@ void Elevator::Descend(double speed) {
 	MotorB->Set(-fabs(speed));
 }
 
+void Elevator::DescendNoShift(double speed) {
+	MotorA->Set(fabs(speed));
+	MotorB->Set(-fabs(speed));
+}
+
+void Elevator::AscendNoShift(double speed) {
+	MotorA->Set(-fabs(speed));
+	MotorB->Set(fabs(speed));
+}
+
 double Elevator::GetEncoder() {
 	return fabs(MotorB->GetSelectedSensorPosition(0));
 }
@@ -95,12 +105,13 @@ bool Elevator::GoToPosition(double targetPos, double speed) {
 		backwards = true;
 	}
 	double err = (fabs(targetPos - currentPos)) / targetPos;
-	std::cout << "ELEVATOR GOTOPOS " <<  speed << " " << err << " " << speed * err << std::endl;
+	std::cout << "ELEVATOR GOTOPOS " <<  speed << " " << err*2.35<< " " << speed * (err*2.35) << std::endl;
+	speed = speed * fmin(1,(err*2.35));
 	if (err > 0.05) {
 		if (backwards) {
-			Descend(speed);
+			DescendNoShift(speed);
 		} else {
-			Ascend(speed);
+			AscendNoShift(speed);
 		}
 		return false;
 	} else {

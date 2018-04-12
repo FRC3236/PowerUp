@@ -38,14 +38,14 @@ void AutoPrioritizeSwitchLeft::Execute() {
 
 		//Switch is on the left//
 		case 1: {
-			if (drivetrain->DriveInches(20, 0.5)) {
+			if (drivetrain->DriveInches(12, 0.5)) {
 				Step = 2;
 				drivetrain->KillDrive();
 				break;
 			}
 		}
 		case 2: {
-			elevator->GoToPosition(2000, 0.5);
+			elevator->GoToPosition(elevator->GetSwitchHeight(), 0.6);
 			if (drivetrain->TurnToAngle(-45)) {
 				drivetrain->KillDrive();
 				Step = 3;
@@ -55,7 +55,7 @@ void AutoPrioritizeSwitchLeft::Execute() {
 			}
 		}
 		case 3: {
-			elevator->GoToPosition(2000, 0.5);
+			elevator->GoToPosition(elevator->GetSwitchHeight(), 0.6);
 			if (drivetrain->DriveInches(190,0.8)) {
 				drivetrain->KillDrive();
 				Step = 4;
@@ -64,7 +64,7 @@ void AutoPrioritizeSwitchLeft::Execute() {
 			}
 		}
 		case 4: {
-			elevator->GoToPosition(2000, 0.5);
+			elevator->GoToPosition(elevator->GetSwitchHeight(), 0.6);
 			cubegrabber->ExtendArm();
 			if (AutoTimer->Get() > 0.6) {
 				Step = 5;
@@ -73,12 +73,14 @@ void AutoPrioritizeSwitchLeft::Execute() {
 		}
 		case 5: {
 			cubegrabber->Extend();
-			cubegrabber->RetractArm();
+			elevator->GoToPosition(elevator->GetSwitchHeight(), 0.6);
 			Step = 6;
 			break;
 		}
 		case 6: {
 			if (drivetrain->DriveInches(-20, 0.4)) {
+
+				cubegrabber->RetractArm();
 				Step = -1;
 				drivetrain->KillDrive();
 			}
@@ -87,14 +89,14 @@ void AutoPrioritizeSwitchLeft::Execute() {
 
 		//Switch is on the right//
 		case 101: {
-			if (drivetrain->DriveInches(20, 0.5)) {
+			if (drivetrain->DriveInches(12, 0.5)) {
 				Step = 102;
 				drivetrain->KillDrive();
 				break;
 			}
 		}
 		case 102: {
-			elevator->GoToPosition(2000, 0.5);
+			elevator->GoToPosition(elevator->GetSwitchHeight(), 0.5);
 			if (drivetrain->TurnToAngle(45)) {
 				drivetrain->KillDrive();
 				Step = 103;
@@ -104,7 +106,7 @@ void AutoPrioritizeSwitchLeft::Execute() {
 			}
 		}
 		case 103: {
-			elevator->GoToPosition(2000, 0.5);
+			elevator->GoToPosition(elevator->GetSwitchHeight(), 0.5);
 			if (drivetrain->DriveInches(190,0.8)) {
 				drivetrain->KillDrive();
 				Step = 104;
@@ -113,7 +115,7 @@ void AutoPrioritizeSwitchLeft::Execute() {
 			}
 		}
 		case 104: {
-			elevator->GoToPosition(2000, 0.5);
+			elevator->GoToPosition(elevator->GetSwitchHeight(), 0.5);
 			cubegrabber->ExtendArm();
 			if (AutoTimer->Get() > 0.6) {
 				Step = 105;

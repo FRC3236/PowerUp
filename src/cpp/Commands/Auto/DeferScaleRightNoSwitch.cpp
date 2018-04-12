@@ -45,14 +45,16 @@ void DeferScaleRightNoSwitch::Execute() {
 			break;
 		}
 		case 1: {
-			elevator->GoToPosition(elevator->GetMaxHeight(), 0.5);
+			if (drivetrain->GetEncoder() > 110) {
+				elevator->GoToPosition(elevator->GetMaxHeight(), 0.5);
+			}
 			if (drivetrain->DriveInches(228, 0.65)) {
 				Step = 2;
 			}
 			break;
 		}
 		case 2: {
-			elevator->GoToPosition(elevator->GetMaxHeight(), 0.5);
+			elevator->GoToPosition(elevator->GetMaxHeight(), 0.8);
 			if (drivetrain->TurnToAngle(90, 0.7)) {
 				drivetrain->SetEncoder();
 				Step = 3;
@@ -60,6 +62,7 @@ void DeferScaleRightNoSwitch::Execute() {
 			break;
 		}
 		case 3: {
+			elevator->GoToPosition(elevator->GetMaxHeight(), 1);
 			if (drivetrain->DriveInches(12, 0.5)) {
 				drivetrain->SetEncoder();
 				Step = 4;
@@ -100,61 +103,10 @@ void DeferScaleRightNoSwitch::Execute() {
 			break;
 		}
 		case 52: {
-			elevator->GoToPosition(elevator->GetSwitchHeight(), 0.5);
-			if (drivetrain->TurnToAngle(90, 0.8)) {
-				cubegrabber->ExtendArm();
-				Step = 53;
-			}
-			break;
-		}
-		case 53: {
-			elevator->GoToPosition(elevator->GetSwitchHeight(), 0.5);
-			if (drivetrain->DriveInches(32, 0.5)) {
-				drivetrain->SetEncoder();
-				AutoTimer->Reset();
-				AutoTimer->Start();
-				cubegrabber->Extend();
-				drivetrain->KillDrive();
-				Step = 54;
-			}
-			break;
-		}
-		case 54: {
-			elevator->GoToPosition(elevator->GetSwitchHeight(), 0.5);
-			if (AutoTimer->Get() > 0.6) {
-				if (drivetrain->DriveInches(-32, 0.5)) {
-					drivetrain->SetEncoder();
-					Step = 55;
-				}
-			}
-			break;
-		}
-		case 55: {
 			drivetrain->KillDrive();
 			break;
 		}
 
-
-		case 101: {
-			if (drivetrain->DriveInchesFast(195, 1)) {
-				Step = 102;
-			}
-			break;
-		}
-		case 102: {
-			if (drivetrain->TurnToAngle(90)) {
-				Step = 103;
-				drivetrain->SetEncoder();
-				drivetrain->SetRefAngle(90);
-			}
-			break;
-		}
-		case 103: {
-			drivetrain->KillDrive();
-			Step = -1;
-			End();
-			break;
-		}
 	}
 }
 

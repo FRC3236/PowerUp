@@ -78,7 +78,7 @@ public:
 		SmartDashboard::PutNumber("VOLTAGE", DriverStation::GetInstance().GetBatteryVoltage());
 		std::string matchType;
 		matchType = to_string(DriverStation::GetInstance().GetMatchType());
-		SmartDashboard::PutString("MATCH INFORMATION", /*matchType*/ + "Playoff " + to_string(DriverStation::GetInstance().GetMatchNumber()));
+		SmartDashboard::PutString("MATCH INFORMATION", /*matchType*/ + "Qualification " + to_string(DriverStation::GetInstance().GetMatchNumber()));
 
         SmartDashboard::PutNumber("GYRO", 0);
 

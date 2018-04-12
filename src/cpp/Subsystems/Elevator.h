@@ -26,6 +26,8 @@ public:
 	void Ascend(double);
 	void AscendTo(double, double);
 	void Descend(double);
+	void AscendNoShift(double);
+	void DescendNoShift(double);
 	void SetMotor(double);
 	void Initialize();
 	bool DeadZone();

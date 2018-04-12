@@ -29,9 +29,8 @@ void AutoDefault::Execute() {
 			End();
 		}
 		case 1: {
-			elevator->GoToPosition(elevator->GetMaxHeight(), 0.6);
+			elevator->GoToPosition(elevator->GetSwitchHeight(), 0.6);
 			cubegrabber->Retract();
-			cubegrabber->RetractArm();
 			if (drivetrain->DriveInchesFast(120,0.7)) {
 				drivetrain->SetEncoder();
 				Step = 2;
@@ -40,7 +39,7 @@ void AutoDefault::Execute() {
 		}
 		case 2: {
 			drivetrain->KillDrive();
-			elevator->GoToPosition(elevator->GetMaxHeight(), 0.7);
+			elevator->GoToPosition(elevator->GetSwitchHeight(), 0.6);
 			break;
 		}
 	}
