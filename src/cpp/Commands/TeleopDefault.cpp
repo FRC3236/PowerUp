@@ -45,7 +45,7 @@ void TeleopDefault::Execute() {
 			cubegrabber->ExtendArm();
 		}
 	}
-	if (controls->OperatorStick->GetRawButtonPressed(5) /*&& GrabberButton*/) {
+	if (controls->OperatorStick->GetRawButtonPressed(5) || controls->DriverStick->GetRawButtonPressed(6)) {
 		if (cubegrabber->Opened) {
 			cubegrabber->Retract();
 		} else {

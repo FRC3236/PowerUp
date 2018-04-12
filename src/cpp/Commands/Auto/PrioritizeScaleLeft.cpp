@@ -48,7 +48,7 @@ void AutoPrioritizeScaleLeft::Execute() {
 		}
 		case 2: {
 			elevator->GoToPosition(elevator->GetMaxHeight(), 0.5);
-			if (drivetrain->TurnToAngle(90, 0.9)) {
+			if (drivetrain->TurnToAngle(90, 1)) {
 				drivetrain->SetEncoder();
 				Step = 3;
 			}
@@ -151,13 +151,13 @@ void AutoPrioritizeScaleLeft::Execute() {
 
 		//Scale is on the right//
 		case 101: {
-			if (drivetrain->DriveInchesFast(192, 1)) {
+			if (drivetrain->DriveInchesFast(194, 1)) {
 				Step = 102;
 			}
 			break;
 		}
 		case 102: {
-			if (drivetrain->TurnToAngle(90)) {
+			if (drivetrain->TurnToAngle(83)) { //CHANGED FROM 90
 				Step = 103;
 				drivetrain->SetEncoder();
 				drivetrain->SetRefAngle(90);
@@ -183,7 +183,7 @@ void AutoPrioritizeScaleLeft::Execute() {
 		}
 		case 105: {
 			elevator->GoToPosition(elevator->GetMaxHeight(), 0.5);
-			if (drivetrain->DriveInchesFast(53, 0.8)) {
+			if (drivetrain->DriveInchesFast(51, 0.8)) {
 				drivetrain->KillDrive();
 				Step = 106;
 			}
@@ -191,7 +191,7 @@ void AutoPrioritizeScaleLeft::Execute() {
 		}
 		case 106: {
 			elevator->GoToPosition(8200, 0.5);
-			if (drivetrain->TurnToAngle(-90, 0.9)) {
+			if (drivetrain->TurnToAngle(-90, 1)) {
 				drivetrain->SetRefAngle(-90);
 				drivetrain->SetEncoder();
 				Step = 107;

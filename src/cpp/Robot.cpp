@@ -77,14 +77,6 @@ public:
 		SmartDashboard::PutNumber("TIME LEFT", DriverStation::GetInstance().GetMatchTime());
 		SmartDashboard::PutNumber("VOLTAGE", DriverStation::GetInstance().GetBatteryVoltage());
 		std::string matchType;
-		/*DriverStation::MatchType t = DriverStation::GetInstance().GetMatchType();
-		if (t == DriverStation::MatchType::kQualification) {
-			matchType = "Qualification";
-		} else if (t == DriverStation::MatchType::kElimination) {
-			matchType = "Eliminator";
-		} else {
-			matchType = "Unknown";
-		}*/
 		matchType = to_string(DriverStation::GetInstance().GetMatchType());
 		SmartDashboard::PutString("MATCH INFORMATION", /*matchType*/ + "Playoff " + to_string(DriverStation::GetInstance().GetMatchNumber()));
 
