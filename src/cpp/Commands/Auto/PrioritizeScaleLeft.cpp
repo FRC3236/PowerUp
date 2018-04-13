@@ -156,11 +156,12 @@ void AutoPrioritizeScaleLeft::Execute() {
 		case 101: {
 			if (drivetrain->DriveInchesFast(194, 1)) {
 				Step = 102;
+				drivetrain->KillDrive();
 			}
 			break;
 		}
 		case 102: {
-			if (drivetrain->TurnToAngle(83)) { //CHANGED FROM 90
+			if (drivetrain->TurnToAngle(83, 0.4)) { //CHANGED FROM 90
 				Step = 103;
 				drivetrain->SetEncoder();
 				drivetrain->SetRefAngle(90);

@@ -72,7 +72,19 @@ void DriveTrain::Turn(double speed) {
     SetRight(speed);
 }
 
+bool DriveTrain::DriveInchesNoSlow(double inches) {
+	return DriveInchesNoSlow(inches, 0.5);
+}
 
+bool DriveTrain::DriveInchesNoSlow(double inches, double speed) {
+	double distance = GetEncoder();
+	if (distance < inches) {
+		DriveStraight(speed, RefAngle);
+	} else {
+		KillDrive();
+		return true;
+	}
+}
 
 bool DriveTrain::DriveInches(double inches, double speed) {
     double distance = GetEncoder();
@@ -93,6 +105,17 @@ bool DriveTrain::DriveInches(double inches, double speed) {
 
 	//std::cout << "[DriveTrain](DriveInches) -> Target: " << inches << " | Current: " << distance << " | Error: "  << err << " | Speed: " << speed << std::endl;
 
+}
+
+bool DriveTrain::DriveInchesNotStraight(double inches, double speed) {
+	double distance = GetEncoder();
+	double err = fabs((inches - distance) / inches);
+	std::cout << "[DriveInchesNotStraight] Dist:" << distance << " Dest:" << inches << std::endl;
+	if (err < 0.03) {
+		speed = 0;
+	}
+	Drive(fmax((fabs(speed) * err), 0.25));
+	return (distance > inches);
 }
 
 bool DriveTrain::DriveInchesFast(double inches, double speed) {

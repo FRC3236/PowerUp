@@ -17,6 +17,8 @@ public:
 	void End() override;
 	void Interrupted() override;
 
+	Timer * AutoTimer;
+	PID * pid;
 	int Step;
 };
 

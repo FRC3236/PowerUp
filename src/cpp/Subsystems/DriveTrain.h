@@ -30,6 +30,9 @@ public:
 	void DriveStraight(double, double);
 	bool DriveInchesFast(double,double);
 	bool DriveInches(double, double);
+	bool DriveInchesNoSlow(double, double);
+	bool DriveInchesNoSlow(double);
+	bool DriveInchesNotStraight(double, double);
 
 	bool TurnAngle(double);
 	bool TurnToAngle(double);

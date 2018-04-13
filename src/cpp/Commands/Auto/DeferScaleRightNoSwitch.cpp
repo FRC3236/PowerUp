@@ -48,14 +48,14 @@ void DeferScaleRightNoSwitch::Execute() {
 			if (drivetrain->GetEncoder() > 110) {
 				elevator->GoToPosition(elevator->GetMaxHeight(), 0.5);
 			}
-			if (drivetrain->DriveInches(228, 0.65)) {
+			if (drivetrain->DriveInches(226, 0.65)) {
 				Step = 2;
 			}
 			break;
 		}
 		case 2: {
 			elevator->GoToPosition(elevator->GetMaxHeight(), 0.8);
-			if (drivetrain->TurnToAngle(90, 0.7)) {
+			if (drivetrain->TurnToAngle(90, 1)) {
 				drivetrain->SetEncoder();
 				Step = 3;
 			}
