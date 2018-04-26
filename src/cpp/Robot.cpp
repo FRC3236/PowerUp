@@ -66,8 +66,8 @@ public:
 		PriorityChooser.AddDefault("SCALE", 1);
 		PriorityChooser.AddObject("SWITCH", 0);
 		PriorityChooser.AddObject("DEFAULT", 2);
-		PriorityChooser.AddObject("DEFER SCALE", 3);
-		PriorityChooser.AddObject("DEFER SCALE NS", 4);
+		PriorityChooser.AddObject("DEFER SCALE RS", 3);
+		PriorityChooser.AddObject("DEFER SCALE LS", 4);
 
 		CommandBase::drivetrain->ResetGyro();
 		CommandBase::drivetrain->SetRefAngle(CommandBase::drivetrain->GetGyro());
@@ -125,12 +125,12 @@ public:
 				return;
 			}
 			case 3: {
-				std::cout << "[Auto] Starting LEFT SCALE DEFERMENT AUTO" << std::endl;
+				std::cout << "[Auto] Starting RIGHT SCALE DEFERMENT AUTO" << std::endl;
 				DeferScale->Start();
 				return;
 			}
 			case 4: {
-				std::cout << "[Auto] Starting LEFT SCALE DEFERMENT AUTO WITH NO SWITCH" << std::endl;
+				std::cout << "[Auto] Starting LEFT SCALE DEFERMENT AUTO" << std::endl;
 				DeferScaleNoSwitch->Start();
 				return;
 			}

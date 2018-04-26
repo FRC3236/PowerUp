@@ -23,6 +23,8 @@ void AutoPrioritizeScaleLeft::Initialize() {
 		Step = 1;
 	}
 
+	drivetrain->SetEncoder();
+
 	std::cout << "AUTO: " << Step << std::endl;
 	cubegrabber->Retract();
 }

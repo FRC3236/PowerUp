@@ -232,7 +232,7 @@ bool DriveTrain::TurnToAngle(double target) {
 		speed = fmax(turn * error, 0.2);
 	} else {
 		error = ((fabs(target) - fabs(current)) / fabs(target));
-		speed = fmax(turn * error, 0.4);
+		speed = fmax(turn * error, 0.5);
 	}
 
 	if (target < current) {
@@ -254,7 +254,7 @@ bool DriveTrain::TurnToAngle(double target, double turn) {
 		//std::cout << "[DriveTrain] " << speed << std::endl;
 	} else {
 		error = ((fabs(target) - fabs(current)) / fabs(target));
-		speed = fmax(turn * error, 0.4);
+		speed = fmax(turn * error, 0.5);
 	}
 	//std::cout << error << std::endl;
 

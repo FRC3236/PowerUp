@@ -96,7 +96,7 @@ bool Elevator::GoToPosition(double targetPos) {
 
 bool Elevator::GoToPosition(double targetPos, double speed) {
 	double currentPos = GetEncoder();
-	std::cout << "ELEVATOR GOTOPOS " << targetPos << " " << GetEncoder() << std::endl;
+	//std::cout << "ELEVATOR GOTOPOS " << targetPos << " " << GetEncoder() << std::endl;
 	bool backwards = false;
 	if (currentPos > targetPos) {
 		double tempPos = targetPos;
@@ -105,7 +105,7 @@ bool Elevator::GoToPosition(double targetPos, double speed) {
 		backwards = true;
 	}
 	double err = (fabs(targetPos - currentPos)) / targetPos;
-	std::cout << "ELEVATOR GOTOPOS " <<  speed << " " << err*2.35<< " " << speed * (err*2.35) << std::endl;
+	//std::cout << "ELEVATOR GOTOPOS " <<  speed << " " << err*2.35<< " " << speed * (err*2.35) << std::endl;
 	speed = speed * fmin(1,(err*2.35));
 	if (err > 0.05) {
 		if (backwards) {

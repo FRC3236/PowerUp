@@ -19,13 +19,7 @@ void DeferScaleRightNoSwitch::Initialize() {
 	drivetrain->KillDrive();
 	if (CommandBase::Field->GetScale()) {
 		//Scale is on the right, defer to other bot, check switch;
-		if (CommandBase::Field->GetSwitch()) {
-			//Switch is on the right, drive forward and turn.
-			Step = 101;
-		} else {
-			//Switch is on the left, go for it!
-			Step = 51;
-		}
+		Step = 51;
 	} else {
 		//Scale is on the left, go for it!
 		Step = 1;
