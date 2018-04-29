@@ -158,7 +158,9 @@ void DriveTrain::SetEncoder() {
 }
 
 double DriveTrain::GetEncoder() {
-	return LeftSideA->GetSelectedSensorPosition(0) / 1440.0 * 6.0 * M_PI; // was left side but i just switched it
+	double val = LeftSideA->GetSelectedSensorPosition(0) / 1440.0 * 6.0 * M_PI;
+	std::cout << "[DRIVETRAIN ENCODER] " << val << std::endl;
+	return val;
 }
 
 void DriveTrain::DriveStraight(double speed, double refAngle) {
@@ -166,12 +168,9 @@ void DriveTrain::DriveStraight(double speed, double refAngle) {
 	double error = currentAngle - refAngle;
 	double marginOfError = 1.6;
 
-	// PID is still in beta and if it doesn't work we can revert //
-	//              to pure proportional control                 //
 	this->pid->Update(currentAngle);
-	double correction = (this->pid->GetPI() / 100)/2; // divide by 2
+	double correction = (this->pid->GetPI() / 100)/2;
 	correction = fmin(speed - correction, speed - 0.2);
-	//std::cout << "[DriveTrain Correction] " << correction << std::endl;
 
 	if (fabs(error) > marginOfError) {
 		if (currentAngle > refAngle) {
@@ -246,26 +245,34 @@ bool DriveTrain::TurnToAngle(double target) {
 bool DriveTrain::TurnToAngle(double target, double turn) {
 	double current = Gyro->GetAngle();
 	double error;
-	double speed;
+	double speed, actspeed;
+
+	turn = fabs(turn);
 	if (target == 0) {
 		turn = 0.2;
 		error = fabs(target-current)*0.1;
 		speed = fmax(turn * error, 0.2);
-		//std::cout << "[DriveTrain] " << speed << std::endl;
 	} else {
 		error = ((fabs(target) - fabs(current)) / fabs(target));
-		speed = fmax(turn * error, 0.5);
+		actspeed = turn*error;
+		if (error < 0.5 && turn > 0.5) {
+			actspeed = fmin(fabs(actspeed), 0.3);
+		}
+		speed = fmax(actspeed, 0.2);
+		if (error < 0.24 && turn >= 0.5) {
+			KillDrive();
+			return true;
+		}
 	}
-	//std::cout << error << std::endl;
 
-	//std::cout << "[DriveTrain] " << target << " " << current << " " << error << std::endl;
+	std::cout << "[DriveTrain] " << target << " " << current << " " << error << " " << speed << " " << actspeed << std::endl;
 
 	if (target < current) {
 		Turn(-speed);
 	} else {
 		Turn(speed);
 	}
-	return (fabs(error) < 0.02);
+	return (fabs(current-target) < 2);
 }
 
 void DriveTrain::ResetGyro() {

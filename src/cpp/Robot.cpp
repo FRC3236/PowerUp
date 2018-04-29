@@ -32,6 +32,7 @@
 #include "Commands/Auto/PrioritizeScaleLeft.h"
 #include "Commands/Auto/DeferScaleRight.h"
 #include "Commands/Auto/DeferScaleRightNoSwitch.h"
+#include "Commands/Auto/DefaultNoEncoder.h"
 #include <iostream>
 #include <opencv2/core/core.hpp>
 
@@ -44,7 +45,7 @@ private:
 	SendableChooser<int> PriorityChooser;
 
 	Command * Teleop = new TeleopDefault();
-	Command * DeferScale, *DeferScaleNoSwitch, * AutoLeftSwitch, * AutoLeftScale, * Default;
+	Command * DeferScale, *DeferScaleNoSwitch, * AutoLeftSwitch, * AutoLeftScale, * Default, * DriveStraightNoEnc;
 
 public:
 	void RobotInit() override {
@@ -57,6 +58,7 @@ public:
 		Default = new AutoDefault();
 		DeferScale = new DeferScaleRight();
 		DeferScaleNoSwitch = new DeferScaleRightNoSwitch();
+		DriveStraightNoEnc = new DefaultNoEncoder();
 	}
 
 	void DisabledInit() override {
@@ -68,6 +70,7 @@ public:
 		PriorityChooser.AddObject("DEFAULT", 2);
 		PriorityChooser.AddObject("DEFER SCALE RS", 3);
 		PriorityChooser.AddObject("DEFER SCALE LS", 4);
+		PriorityChooser.AddObject("DEFAULT NENC", 5);
 
 		CommandBase::drivetrain->ResetGyro();
 		CommandBase::drivetrain->SetRefAngle(CommandBase::drivetrain->GetGyro());
@@ -82,7 +85,7 @@ public:
 
         SmartDashboard::PutNumber("GYRO", 0);
 
-		SmartDashboard::PutBoolean("COMPRESSOR", true);
+		SmartDashboard::PutBoolean("GRIPPER OPEN", CommandBase::cubegrabber->IsOpen());
 
 		CommandBase::cubegrabber->Stop();
 	}
@@ -134,6 +137,11 @@ public:
 				DeferScaleNoSwitch->Start();
 				return;
 			}
+			case 5: {
+				std::cout << "[Auto] Starting DEFAULT NO ENCODER AUTO" << std::endl;
+				DriveStraightNoEnc->Start();
+				return;
+			}
 		}
 	}
 
@@ -151,7 +159,7 @@ public:
 
 	void TeleopPeriodic() override {
 		SmartDashboard::PutNumber("VOLTAGE", DriverStation::GetInstance().GetBatteryVoltage());
-
+		SmartDashboard::PutBoolean("GRIPPER OPEN", CommandBase::cubegrabber->IsOpen());
 		Scheduler::GetInstance()->Run();
 	}
 

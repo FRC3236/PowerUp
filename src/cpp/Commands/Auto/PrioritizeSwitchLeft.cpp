@@ -29,14 +29,14 @@ void AutoPrioritizeSwitchLeft::Initialize() {
 }
 
 void AutoPrioritizeSwitchLeft::Execute() {
-
-	switch (Step) {
-		default: {
-			drivetrain->KillDrive();
-			Step = -1;
-			End();
-			break;
-		}
+	std::cout << "STEP: " << Step << std::endl;
+			switch (Step) {
+				default: {
+					drivetrain->KillDrive();
+					Step = -1;
+					End();
+					break;
+				}
 
 		//Switch is on the left//
 		case 1: {
@@ -49,7 +49,7 @@ void AutoPrioritizeSwitchLeft::Execute() {
 		}
 		case 2: {
 			elevator->GoToPosition(elevator->GetSwitchHeight(), 0.6);
-			if (drivetrain->TurnToAngle(-45)) {
+			if (drivetrain->TurnToAngle(-45, 0.1)) {
 				drivetrain->KillDrive();
 				Step = 3;
 				// Purposefully not setting ref angle so
@@ -63,7 +63,7 @@ void AutoPrioritizeSwitchLeft::Execute() {
 		case 3: {
 			elevator->GoToPosition(elevator->GetSwitchHeight(), 0.6);
 			std::cout << std::endl << drivetrain->GetEncoder() << " ENCODER VAL" << std::endl;
-			if (drivetrain->DriveInchesNotStraight(70,0.3)) {
+			if (drivetrain->DriveInchesNotStraight(55,0.3)) {
 				drivetrain->KillDrive();
 				Step = 4;
 				AutoTimer->Start();
@@ -72,15 +72,13 @@ void AutoPrioritizeSwitchLeft::Execute() {
 		}
 		case 4: {
 			elevator->GoToPosition(elevator->GetSwitchHeight(), 0.6);
-			if (drivetrain->TurnToAngle(0, 0.5)) {
-				Step = 5;
-				drivetrain->SetEncoder();
-			}
+			cubegrabber->Extend();
+			Step = 7;
 			break;
 		}
 		case 5: {
 			elevator->GoToPosition(elevator->GetSwitchHeight(), 0.6);
-			if (drivetrain->DriveInches(10, 0.2)) {
+			if (drivetrain->DriveInches(12, 0.4)) {
 				drivetrain->KillDrive();
 				Step = 6;
 			}
@@ -93,7 +91,7 @@ void AutoPrioritizeSwitchLeft::Execute() {
 			break;
 		}
 		case 7: {
-			if (drivetrain->DriveInches(-20, 0.4)) {
+			if (drivetrain->DriveInches(-20, 0.2)) {
 
 				Step = -1;
 				drivetrain->KillDrive();
@@ -103,47 +101,54 @@ void AutoPrioritizeSwitchLeft::Execute() {
 
 		//Switch is on the right//
 		case 101: {
-			if (drivetrain->DriveInches(12, 0.5)) {
+			elevator->GoToPosition(elevator->GetSwitchHeight(), 0.6);
+			if (drivetrain->TurnToAngle(45, 0.8)) {
+				drivetrain->KillDrive();
 				Step = 102;
-				drivetrain->KillDrive();
-				break;
-			}
-		}
-		case 102: {
-			elevator->GoToPosition(elevator->GetSwitchHeight(), 0.5);
-			if (drivetrain->TurnToAngle(45)) {
-				drivetrain->KillDrive();
-				Step = 103;
 				// Purposefully not setting ref angle so
 				// the drivetrain curves to the switch.
-				break;
+				cubegrabber->ExtendArm();
+				drivetrain->SetEncoder();
+				drivetrain->SetRefAngle(45);
 			}
+			break;
+		}
+		case 102: {
+			elevator->GoToPosition(elevator->GetSwitchHeight(), 0.6);
+			std::cout << std::endl << drivetrain->GetEncoder() << " ENCODER VAL" << std::endl;
+			if (drivetrain->DriveInchesNotStraight(55,0.5)) {
+				drivetrain->KillDrive();
+				Step = 103;
+				AutoTimer->Start();
+			}
+			break;
 		}
 		case 103: {
-			elevator->GoToPosition(elevator->GetSwitchHeight(), 0.5);
-			if (drivetrain->DriveInches(190,0.8)) {
-				drivetrain->KillDrive();
+			elevator->GoToPosition(elevator->GetSwitchHeight(), 0.6);
+			if (drivetrain->TurnToAngle(0, 0.3)) {
 				Step = 104;
-				AutoTimer->Start();
-				break;
+				drivetrain->SetEncoder();
+				drivetrain->SetRefAngle(0);
 			}
+			break;
 		}
 		case 104: {
-			elevator->GoToPosition(elevator->GetSwitchHeight(), 0.5);
-			cubegrabber->ExtendArm();
-			if (AutoTimer->Get() > 0.6) {
+			elevator->GoToPosition(elevator->GetSwitchHeight(), 0.6);
+			if (drivetrain->DriveInches(12, 0.6)) {
+				drivetrain->KillDrive();
 				Step = 105;
 			}
 			break;
 		}
 		case 105: {
 			cubegrabber->Extend();
-			cubegrabber->RetractArm();
+			elevator->GoToPosition(elevator->GetSwitchHeight(), 0.6);
 			Step = 106;
 			break;
 		}
 		case 106: {
-			if (drivetrain->DriveInches(-20, 0.4)) {
+			if (drivetrain->DriveInches(-20, 0.2)) {
+
 				Step = -1;
 				drivetrain->KillDrive();
 			}

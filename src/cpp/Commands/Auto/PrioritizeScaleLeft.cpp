@@ -30,7 +30,7 @@ void AutoPrioritizeScaleLeft::Initialize() {
 }
 
 void AutoPrioritizeScaleLeft::Execute() {
-	std::cout << "[Auto Scale] " <<  Step << " ENC: " << drivetrain->GetEncoder() << std::endl;
+	std::cout << "[Auto Scale] " <<  Step << std::endl;
 	switch (Step) {
 		default: {
 			std::cout << "[Auto Scale] Auto failed! We were on step " << Step << std::endl;
@@ -45,14 +45,14 @@ void AutoPrioritizeScaleLeft::Execute() {
 			if (drivetrain->GetEncoder() > 110)  {
 				elevator->GoToPosition(elevator->GetMaxHeight(), 0.5);
 			}
-			if (drivetrain->DriveInches(228, 0.8)) {
+			if (drivetrain->DriveInches(228, 0.6)) {
 				Step = 2;
 			}
 			break;
 		}
 		case 2: {
 			elevator->GoToPosition(elevator->GetMaxHeight(), 1);
-			if (drivetrain->TurnToAngle(90, 1)) {
+			if (drivetrain->TurnToAngle(90, .9)) {
 				drivetrain->SetEncoder();
 				Step = 3;
 			}

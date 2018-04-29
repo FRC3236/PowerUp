@@ -42,7 +42,7 @@ void DeferScaleRightNoSwitch::Execute() {
 			if (drivetrain->GetEncoder() > 110) {
 				elevator->GoToPosition(elevator->GetMaxHeight(), 0.5);
 			}
-			if (drivetrain->DriveInches(226, 0.65)) {
+			if (drivetrain->DriveInches(226, 0.6)) {
 				Step = 2;
 			}
 			break;

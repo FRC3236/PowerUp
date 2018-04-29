@@ -4,6 +4,7 @@
 
 #include "CubeGrabber.h"
 #include "../RobotMap.h"
+#include <iostream>
 
 CubeGrabber::CubeGrabber() : Subsystem("CubeGrabber") {
 	SetName("CubeGrabber");
@@ -12,6 +13,9 @@ CubeGrabber::CubeGrabber() : Subsystem("CubeGrabber") {
 	ArmDown = true;
 	Solenoid1 = new DoubleSolenoid(SolenoidPort1, SolenoidPort1 + 1);
 	Solenoid2 = new DoubleSolenoid(SolenoidPort2, SolenoidPort2 + 1);
+
+	IntakeLeft = new WPI_TalonSRX(INTAKEL);
+	IntakeRight = new WPI_TalonSRX(INTAKER);
 
 	//StopCompressor();
 	//Extend();
@@ -40,6 +44,17 @@ void CubeGrabber::ExtendArm() {
 
 void CubeGrabber::Stop() {
 	Solenoid1->Set(DoubleSolenoid::Value::kOff);
+}
+
+bool CubeGrabber::IsOpen() {
+	std::cout << Solenoid1->Get() << std::endl;
+	std::cout << (Solenoid1->Get() == 2) << std::endl << std::endl;
+	return Solenoid1->Get() == 2;
+}
+
+void CubeGrabber::SpinIntake(double speed) {
+	IntakeLeft->Set(-fmin(speed, 0.5));
+	IntakeRight->Set(-fmin(speed, 0.5));
 }
 
 bool CubeGrabber::GetCompressor() {

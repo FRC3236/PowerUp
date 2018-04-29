@@ -30,22 +30,33 @@ void TeleopDefault::Execute() {
 
 	if (controls->OperatorStick->GetRawButton(1)) {
 		if (controls->OperatorStick->GetY() >= 0) {
-			elevator->Descend(controls->OperatorStick->GetY() *.8);
+			elevator->Descend(controls->OperatorStick->GetY());
 		} else {
-			elevator->Ascend(controls->OperatorStick->GetY() *.8);
+			elevator->Ascend(controls->OperatorStick->GetY());
 		}
 	} else {
 		elevator->SetMotor(0);
 	}
 
-	if(controls->OperatorStick->GetRawButtonPressed(3)){
+	if(controls->OperatorStick->GetRawButtonPressed(3) || controls->OperatorStick->GetRawButtonPressed(9)) {
 		if (cubegrabber->ArmDown) {
 			cubegrabber->RetractArm();
 		} else {
 			cubegrabber->ExtendArm();
 		}
 	}
-	if (controls->OperatorStick->GetRawButtonPressed(5) || controls->DriverStick->GetRawButtonPressed(6)) {
+	if (controls->OperatorStick->GetPOV() == 0)  {
+		//Spit cube out//
+		cubegrabber->SpinIntake(-0.5);
+	} else if (controls->OperatorStick->GetPOV() == 180) {
+		//Suck cube in//
+		cubegrabber->SpinIntake(0.5);
+	} else {
+		//Constant slight inward force
+		cubegrabber->SpinIntake(0);
+	}
+	std::cout << "DRIVETRAIN ENC: " << drivetrain->GetEncoder() << std::endl;
+	if (controls->OperatorStick->GetRawButtonPressed(5) || controls->DriverStick->GetRawButtonPressed(6) || controls->OperatorStick->GetRawButtonPressed(10)) {
 		if (cubegrabber->Opened) {
 			cubegrabber->Retract();
 		} else {
@@ -56,7 +67,7 @@ void TeleopDefault::Execute() {
 	if (controls->OperatorStick->GetRawButtonPressed(11)) {
 		cubegrabber->ToggleCompressor();
 	}
-	frc::SmartDashboard::PutBoolean("COMPRESSOR", cubegrabber->GetCompressor());
+	frc::SmartDashboard::PutBoolean("GRIPPER OPEN", cubegrabber->Opened);
 	frc::SmartDashboard::PutNumber("TIME LEFT", DriverStation::GetInstance().GetMatchTime());
 	frc::SmartDashboard::PutNumber("ELEVATOR ENCODER", elevator->GetEncoder());
 }

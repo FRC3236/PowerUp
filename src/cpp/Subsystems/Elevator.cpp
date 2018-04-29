@@ -38,7 +38,7 @@ double Elevator::GetMaxHeight() {
 }
 
 double Elevator::GetSwitchHeight() {
-	return 2750;
+	return 2950;
 }
 
 void Elevator::SetMotor(double speed) {

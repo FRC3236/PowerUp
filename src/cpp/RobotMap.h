@@ -20,6 +20,8 @@ constexpr auto RIGHTCANBASIC = 2;
 constexpr auto LEFTCANBASIC = 4;
 constexpr auto LIFTCAN2 = 3;
 constexpr auto LIFTCAN = 6;
+constexpr auto INTAKEL = 7;
+constexpr auto INTAKER = 8;
 
 // Solenoids //
 constexpr auto SolenoidPort1 =  0;

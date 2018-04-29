@@ -19,6 +19,7 @@ void AutoDefault::Initialize() {
 		drivetrain->SetEncoder();
 	}
 	Step = 1;
+	cubegrabber->Retract();
 }
 
 void AutoDefault::Execute() {
@@ -28,18 +29,28 @@ void AutoDefault::Execute() {
 			drivetrain->KillDrive();
 			End();
 		}
-		case 1: {
-			cubegrabber->Retract();
-			if (drivetrain->DriveInchesFast(80,0.7)) {
-				drivetrain->SetEncoder();
-				Step = 2;
+			/*case 1: {
+				if (drivetrain->TurnToAngle(90, 0.3)) {
+					Step = 2;
+				}
+				break;
 			}
-			break;
-		}
-		case 2: {
-			drivetrain->KillDrive();
-			break;
-		}
+			case 2: {
+				drivetrain->KillDrive();
+				break;
+			}*/
+			case 1: {
+				cubegrabber->Retract();
+				if (drivetrain->DriveInchesFast(90,0.7)) {
+					drivetrain->SetEncoder();
+					Step = 2;
+				}
+				break;
+			}
+			case 2: {
+				drivetrain->KillDrive();
+				break;
+			}
 	}
 }
 
